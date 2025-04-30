@@ -4,10 +4,11 @@
 # python cache
 **/__pycache__/
 
-# allow src/
+# allow src/ src/utils
 !/src/
 
 # under src, ignore specific folders
 /src/localdb/
 /src/.env
 /src/assets/images/
+/src/callbacks/support_callback.py

@@ -20,7 +20,7 @@ app.title = "kowa"
 
 
 app.layout = html.Div([
-    dcc.Location("url",refresh=False),
+    dcc.Location("url", refresh=False),
     navbar(),
     dash.page_container
 ])
@@ -28,7 +28,7 @@ app.layout = html.Div([
 try:
     register_callbacks(app, use_remote_db=False)
 except Exception as e:
-    print("error:",e)
+    print("Callback error:",e)
 
 if __name__ == '__main__':
     #test_connection()
