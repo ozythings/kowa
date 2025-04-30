@@ -70,24 +70,32 @@ def create_local_user(name, email, password):
     return int(userid) # Ensures this is not a numpy.int64
 
 # validates the user credentials in the local DB
+# def validate_local_user(email, password):
+#     try:
+#         users_df = pd.read_csv(local_users_url())
+#         user = users_df[users_df['email'] == email]
+#         
+#         # if user exists, check password
+#         if not user.empty:
+#             stored_hash = user.iloc[0]['password']
+#             
+#             if bcrypt.checkpw(password.encode(), stored_hash.encode()):
+#                 return int(user.iloc[0]['userid'])
+#         
+#         # default return when authentication fails
+#         return None
+#         
+#     except Exception as e:
+#         print(f"Authentication error: {e}")
+#         return None
+
+# for debug purposes
 def validate_local_user(email, password):
-    try:
-        users_df = pd.read_csv(local_users_url())
-        user = users_df[users_df['email'] == email]
-        
-        # if user exists, check password
-        if not user.empty:
-            stored_hash = user.iloc[0]['password']
-            
-            if bcrypt.checkpw(password.encode(), stored_hash.encode()):
-                return int(user.iloc[0]['userid'])
-        
-        # default return when authentication fails
-        return None
-        
-    except Exception as e:
-        print(f"Authentication error: {e}")
-        return None
+    users_df = pd.read_csv(local_users_url())
+    user = users_df[(users_df['email'] == email)]
+    if not user.empty:
+        return int(user.iloc[0]['userid'])  # Ensure this is a standard Python integer
+    return None
 
 # checks if an email exists in the local DB during user registration
 def email_exists_local(email):

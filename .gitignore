@@ -12,3 +12,6 @@
 /src/.env
 /src/assets/images/
 /src/callbacks/support_callback.py
+
+# temp ocr uploads
+/src/temp_uploads/
