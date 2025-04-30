@@ -1,12 +1,12 @@
 from dash import html, dcc, register_page
+from flask import session
+
+from pages.unauthorized import unauthorized_layout
 
 register_page(__name__, "/support")
 
 def support_layout():
     return html.Div([
-
-        dcc.Location(id="url"),
-
         html.Div([
             html.Div([    
                 html.H1('Contact Form', className='text-3xl font-bold text-gray-800 mb-2'),
@@ -50,4 +50,8 @@ def support_layout():
         ], className='min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gray-50')
     ])
 
-layout = support_layout()
+def layout():
+    if session.get("logged_in"):
+        return support_layout()
+    else:
+        return unauthorized_layout()

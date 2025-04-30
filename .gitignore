@@ -8,8 +8,6 @@
 !/src/
 
 # under src, ignore specific folders
-/src/callbacks/
 /src/localdb/
-/src/utils/
 /src/.env
 /src/assets/images/

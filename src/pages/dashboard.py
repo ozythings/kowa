@@ -26,11 +26,6 @@ def dashboard_layout(use_remote_db=False):
         last_transaction_month = current_month()
 
     return html.Div([
-        dcc.Location(id="url"),
-        dcc.Store(id="login_status", storage_type="local"),
-        dcc.Store(id="signup_status", storage_type="local"),
-        dcc.Store(id="signout_status", storage_type="local"),
-
         html.Div([
             html.Div([
                 html.H1("Year and Month", className="text-xl font-bold mb-4"),

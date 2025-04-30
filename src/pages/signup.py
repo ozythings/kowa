@@ -58,4 +58,5 @@ def signup_layout():
         ], className='flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50')
     ], className='min-h-screen flex flex-col')
 
-layout = signup_layout()
+def layout():
+    return signup_layout()

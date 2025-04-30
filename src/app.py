@@ -1,7 +1,7 @@
 from datetime import timedelta
 import os
 import dash
-from dash import html
+from dash import dcc, html
 from flask import Flask
 from utils.load_data import cache, test_connection
 from utils.register_callbacks import register_callbacks
@@ -20,6 +20,7 @@ app.title = "kowa"
 
 
 app.layout = html.Div([
+    dcc.Location("url",refresh=False),
     navbar(),
     dash.page_container
 ])

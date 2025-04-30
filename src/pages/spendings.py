@@ -1,4 +1,6 @@
 from dash import html, dcc, dash_table, register_page
+from flask import session
+from pages.unauthorized import unauthorized_layout
 from utils.load_data import current_year, monthsToInt, load_categories, load_local_categories
 
 register_page(__name__, "/spendings")
@@ -10,12 +12,6 @@ def spendings_layout(use_remote_db=False):
         categories_df = load_local_categories()
 
     return html.Div([
-
-        dcc.Location(id="url"),
-        dcc.Store(id="login_status", storage_type="local"),
-        dcc.Store(id="signup_status", storage_type="local"),
-        dcc.Store(id="signout_status", storage_type="local"),
-
         html.Div([
             html.H1("Financial Management", className="text-2xl md:text-4xl font-extrabold mb-4 text-gray-800"),
             html.P(
@@ -23,22 +19,24 @@ def spendings_layout(use_remote_db=False):
                 className="font-medium text-gray-700 mb-6 md:mb-10 text-sm md:text-lg max-w-3xl"
             ),
 
-            # Main content container - horizontal on desktop, vertical on mobile
             html.Div([
-                # Left Section (Add Transaction + Monthly Budget)
+                # left Section (add transaction + monthly budget)
                 html.Div([
-                    # Add Transaction Section
                     html.Div([
                         html.H2("Add Transaction", className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-blue-700"),
-                        
                         html.Div([
                             html.H3("Select date", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
-                            dcc.DatePickerSingle(
-                                id='input_date',
-                                placeholder='YYYY-MM-DD',
-                                display_format='YYYY-MM-DD',
-                                className="w-full"
-                            )
+                            dcc.Input(
+                                    id="input_date",
+                                    type="date",
+                                    className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                                ),
+                        #     dcc.DatePickerSingle(
+                        #         id='input_date',
+                        #         placeholder='YYYY-MM-DD',
+                        #         display_format='YYYY-MM-DD',
+                        #         className="w-full"
+                        #     )
                         ], className="w-full mb-4 md:mb-5"),
                         
                         html.Div([
@@ -77,7 +75,6 @@ def spendings_layout(use_remote_db=False):
                         html.Div(id='transaction_status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600")
                     ], className="mb-8 md:mb-0"),
                     
-                    # Monthly Budget Section
                     html.Div([
                         html.H2("Monthly Budget", className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-green-700"),
                         
@@ -121,12 +118,11 @@ def spendings_layout(use_remote_db=False):
                     ], className="mb-8 md:mb-0"),
                 ], className="flex flex-col space-y-8 md:space-y-0 md:space-x-8 md:flex-row md:w-1/2"),
                 
-                # Vertical divider - hidden on mobile
+                # vertical divider - hidden on mobile
                 html.Div(className="hidden md:block border-l border-gray-300 mx-0 md:mx-4"),
                 
-                # Right Section (Category Budget + Budget Overview)
+                # right section (category budget + budget overview)
                 html.Div([
-                    # Category Budget Section
                     html.Div([
                         html.H2("Category Budget", className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-purple-700"),
                         
@@ -156,7 +152,6 @@ def spendings_layout(use_remote_db=False):
                         html.Div(id='category_budget_status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600")
                     ], className="mb-8"),
                     
-                    # Budget Overview Section
                     html.Div([
                         html.H2("Budget Overview", className="text-xl md:text-2xl font-semibold mb-4 text-gray-800"),
                         dash_table.DataTable(
@@ -189,4 +184,8 @@ def spendings_layout(use_remote_db=False):
         ], className="w-full max-w-6xl rounded-lg flex flex-col items-center justify-center p-4 md:p-8 text-left bg-[#f9fafb] border border-gray-200 shadow-md mx-2 md:mx-8 my-4 md:my-8")
     ], className="min-h-screen w-full overflow-auto flex justify-center items-center")
 
-layout = spendings_layout()
+def layout():
+    if session.get("logged_in"):
+        return spendings_layout(use_remote_db=False)
+    else:
+        return unauthorized_layout()

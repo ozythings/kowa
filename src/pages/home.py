@@ -2,11 +2,12 @@ import dash
 from dash import html, dcc
 from flask import session
 
+from pages.unauthorized import unauthorized_layout
+
 dash.register_page(__name__, path="/")
 
 def home_layout():
     return html.Div([
-    dcc.Location(id="url"),
     # hero
     html.Div([
         html.Div([
@@ -94,4 +95,6 @@ def home_layout():
     ], className='bg-black text-white py-10')
 ], className='font-sans')
 
-layout = home_layout()
+def layout():
+    return home_layout()
+
