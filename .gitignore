@@ -1,0 +1,15 @@
+# node_modules
+/node_modules/
+
+# python cache
+**/__pycache__/
+
+# allow src/
+!/src/
+
+# under src, ignore specific folders
+/src/callbacks/
+/src/localdb/
+/src/utils/
+/src/.env
+/src/assets/images/
