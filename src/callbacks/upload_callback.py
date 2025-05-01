@@ -6,81 +6,37 @@ from dash.dash import base64
 from flask import session
 from flask_caching import Cache
 from chrome_lens_py import LensAPI
+import re
 
-# TODO: fixme
-# parsing doesn't work as expected(amount)
-def parse_receipt_text(text, receipt_type):
-    """
-    Parse the OCR text based on receipt type
-    
-    Args:
-        text: The raw OCR text
-        receipt_type: The type of receipt (BIM, A101, EKENT)
-        
-    Returns:
-        tuple: (amount, date, description)
-    """
-    import re
-    from datetime import datetime
-    
-    amount = ""
+def parse_receipt_text(text: str, receipt_type: str):
+    amount_pattern = r'(\d+[.,]\d{1,2})'
+    date_pattern = r'\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b'
+    time_pattern = r'SAAT\s*[:\-]?\s*(\d{1,2}:\d{2})'
+
+    all_amounts = re.findall(amount_pattern, text)
+    amount = 0.0
+    if all_amounts:
+        numeric_amounts = [float(a.replace(',', '.')) for a in all_amounts]
+        amount = max(numeric_amounts)
+
     date = ""
-    description = ""
-    
-    # common regex patterns
-    amount_pattern = r'(\*?)\$?\d+[.,]\d{2}'
-    date_pattern = r'\d{1,2}[./-]\d{1,2}[./-]\d{2,4}'  # Matches dates like DD/MM/YYYY
-    
-    # type-specific parsing
-    if receipt_type == "BIM":
-        # example BIM receipt parsing
-        amount_matches = re.findall(r'TOPLAM\s*[:\s]\s*(\d+[.,]\d{2})', text, re.IGNORECASE)
-        if amount_matches:
-            amount = amount_matches[0]
-            
-        date_matches = re.findall(r'TARİH\s*[:\s]\s*(' + date_pattern + ')', text, re.IGNORECASE)
-        if date_matches:
-            date = date_matches[0]
-            
-        description = "BIM Receipt"
-            
-    elif receipt_type == "A101":
-        # Example A101 receipt parsing
-        amount_matches = re.findall(r'(?:GENEL TOPLAM|TOPLAM)\s*[:\s]\s*(\d+[.,]\d{2})', text, re.IGNORECASE)
-        if amount_matches:
-            amount = amount_matches[0]
-            
-        date_matches = re.findall(date_pattern, text)
-        if date_matches:
-            date = date_matches[0]
-            
-        description = "A101 Receipt"
-        
-    elif receipt_type == "EKENT":
-        # example EKENT receipt parsing
-        amount_matches = re.findall(amount_pattern, text)
-        if amount_matches:
-            # assuming the last amount is the total
-            amount = amount_matches[-1]
-            
-        date_matches = re.findall(date_pattern, text)
-        if date_matches:
-            date = date_matches[0]
-            
-        description = "EKENT Receipt"
-        
-    else:
-        # generic parsing for unknown receipt types
-        amount_matches = re.findall(amount_pattern, text)
-        if amount_matches:
-            amount = amount_matches[-1]  # Usually the last amount is the total
-            
-        date_matches = re.findall(date_pattern, text)
-        if date_matches:
-            date = date_matches[0]
-            
-        description = f"Receipt ({receipt_type})"
-    
+    date_matches = re.findall(date_pattern, text)
+    if date_matches:
+        date = date_matches[0]
+
+    description = "Unknown Time"
+    time_matches = re.findall(time_pattern, text, re.IGNORECASE)
+    if time_matches:
+        receipt_type = receipt_type.upper()
+        if receipt_type == "BIM":
+            description = f"Time: {time_matches[0]} BIM Receipt"
+        elif receipt_type == "A101":
+            description =f"Time: {time_matches[0]} A101 Receipt"
+        elif receipt_type == "EKENT":
+            description = f"Time: {time_matches[0]} EKENT Receipt"
+        else:
+            description = f"Time: {time_matches[0]} Receipt ({receipt_type})"
+
     return amount, date, description
 
 async def process_image_async(image_path):

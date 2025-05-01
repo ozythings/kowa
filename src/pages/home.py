@@ -7,6 +7,11 @@ from pages.unauthorized import unauthorized_layout
 dash.register_page(__name__, path="/")
 
 def home_layout():
+    if session.get("logged_in"):
+        hero_btn = dcc.Link("Dashboard", href="/dashboard", className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700")
+    else:
+        hero_btn = dcc.Link("Sign up now", href="/signup", className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700")
+
     return html.Div([
     # hero
     html.Div([
@@ -14,7 +19,7 @@ def home_layout():
             html.Div([
                 html.H1("Visualize Your Finances", className="text-4xl font-semibold mb-4"),
                 html.P("Gain control over your expenses. Discover clear, visual insights into your spending to help you budget smarter and save more.", className="text-gray-600 mb-6"),
-                html.Div(id="hero-btn", className="mt-10")
+                html.Div(hero_btn, id="hero-btn", className="mt-10")
             ], className="max-w-xl", id="hero"),
             #html.Img(src="/assets/images/logo.png", className="w-40")
         ], className="flex justify-around items-center px-10")

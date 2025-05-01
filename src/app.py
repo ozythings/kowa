@@ -20,7 +20,8 @@ app.title = "kowa"
 
 
 app.layout = html.Div([
-    dcc.Location("url", refresh=False),
+    dcc.Store("login_status"),
+    dcc.Location(id="url"),
     navbar(),
     dash.page_container
 ])

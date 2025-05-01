@@ -6,9 +6,9 @@ dash.register_page(__name__, path="/signin")
 
 def signin_layout():
     return html.Div([
-        # Sign-in form container
-        dcc.Store("login_status"),
+
         dcc.Store("login_message"),
+
         html.Div([
             html.Div([
                 html.Img(src="/assets/images/question.png", 

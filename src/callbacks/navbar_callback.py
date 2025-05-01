@@ -17,12 +17,20 @@ def navbar_callback(app):
             nav_links.extend([
                 dcc.Link("Dashboard", href='/dashboard', className='text-lg text-white hover:underline'),
                 dcc.Link("Spendings", href='/spendings', className='text-lg text-white hover:underline'),
-                dcc.Link("Logout", href='/logout', className='text-lg text-white hover:underline')
+                dcc.Link("Upload", href='/upload', className='text-lg text-white hover:underline'),
+                dcc.Link("Settings", href='/settings', className='text-lg text-white hover:underline'),
+                html.Button(
+                    "Logout",
+                    id="logout_button",
+                    className="px-4 py-2 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                )
             ])
         else:
-            nav_links.append(
-                dcc.Link("Sign in", href='/signin', className='text-lg text-white hover:underline')
-            )
+            nav_links.extend([
+                dcc.Link("Sign in", href='/signin', className='text-lg text-white hover:underline'),
+                dcc.Link("Sign up", href='/signup', className='text-lg text-white hover:underline'),
+
+            ])
 
         return html.Div([
             html.Div([
@@ -49,6 +57,14 @@ def navbar_callback(app):
                 )
             ], className='flex flex-col md:flex-row justify-between items-center py-4 px-6 bg-gradient-to-r from-purple-600 to-blue-500 w-full')
         ])
+
+        # @app.callback(
+        #     Output("navbar","children"),
+        #     Input("url","pathname")
+        # )
+        # def test():
+        #     pass
+
 
     # got fxkin broken
     # TODO: fixme

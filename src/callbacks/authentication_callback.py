@@ -77,30 +77,27 @@ def authentication_callback(app, use_remote_db=False):
             return 'Please fill out all fields'
         return ''
    
-    # callback: logout and clear session
     @app.callback(
-        Output('signout_status', 'children'),
-        [Input('logout_button', 'n_clicks')]
-    )
-    def logout_user(n_clicks):
-        if n_clicks and n_clicks > 0:
-            print("User successfully logged out")
-            return 'Logout successful'
-        
-        return no_update
-    
-
-
-    @app.callback(
-        Output('url', 'pathname'),  # update the pathname of the Location component to trigger the redirect
+        Output('url', 'pathname', allow_duplicate=True),  # update the pathname of the Location component to trigger the redirect
         Input('login_button', 'n_clicks'),
-        State('login_status', 'data'),
+        Input('login_status', 'data'),
         prevent_initial_call=True
     )
     def redirect_user(n_clicks, login_status):
         if n_clicks:
             if login_status and login_status.get("logged_in"):
-                sleep(2)  # delay for showing the login status
-                return '/dashboard'  # redirect to the dashboard page (pathname)
+                sleep(1)
+                return '/dashboard'
         return no_update
 
+    @app.callback(
+        Output('url', 'pathname',allow_duplicate=True),
+        Input('logout_button', 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def logout_user(n_clicks):
+        if n_clicks:
+            session.clear()
+            sleep(1)
+            return '/'
+        return no_update

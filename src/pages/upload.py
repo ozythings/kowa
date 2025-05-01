@@ -37,6 +37,7 @@ layout = html.Div(
                         {"label": "BIM", "value": "BIM"},
                         {"label": "A101", "value": "A101"},
                         {"label": "EKENT", "value": "EKENT"},
+                        {"label": "OTHER", "value": "OTHER"},
                     ],
                     value="BIM",  # Default value
                     className="w-full p-2 border rounded",

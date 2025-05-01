@@ -48,7 +48,7 @@ def signup_layout():
                                className='w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors mb-4'),
                     
                     html.Div([
-                        html.Span('Already a budgetr? ', className='text-gray-600'),
+                        html.Span('Already have an account? ', className='text-gray-600'),
                         dcc.Link('Sign in', 
                                  href='/signin', 
                                  className='text-blue-600 hover:underline')
