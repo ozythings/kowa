@@ -47,6 +47,11 @@ layout = html.Div(
                     id="process-button",
                     className="w-full px-4 py-2 bg-green-500 text-white rounded mt-4",
                 ),
+                html.Button(
+                    "Add Transaction",
+                    id="ocr-add-transaction",
+                    className="w-full px-4 py-2 bg-gray-500 text-white rounded mt-4",
+                ),
             ]
         ),
         
@@ -61,19 +66,26 @@ layout = html.Div(
                     children=[
                         html.Div(
                             className="flex justify-between",
-                            children=[html.Label("Amount:"), html.Div(id="ocr-amount")]
+                            children=[html.Label("Amount:"), dcc.Input(id="ocr-amount",
+                                        className="bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-72")]
                         ),
                         html.Div(
                             className="flex justify-between",
-                            children=[html.Label("Date:"), html.Div(id="ocr-date")]
+                            children=[html.Label("Date:"), dcc.Input(id="ocr-date",
+                                        className="bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-72")]
+                                                                     
                         ),
                         html.Div(
                             className="flex justify-between",
-                            children=[html.Label("Category:"), html.Div(id="ocr-category")]
+                            children=[html.Label("Category:"), dcc.Input(id="ocr-category",
+                                        className="bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-72")]
+                                                                        
                         ),
                         html.Div(
                             className="flex justify-between",
-                            children=[html.Label("Description:"), html.Div(id="ocr-description")]
+                            children=[html.Label("Description:"), dcc.Input(id="ocr-description",
+                                        className="bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-72"
+                                                                            )]
                         ),
                     ]
                 ),

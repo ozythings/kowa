@@ -26,7 +26,9 @@ def spendings_callback(app, use_remote_db=False):
                 'amount': amount, 
                 'description': description
                 }
-   
+  
+            print(f"---------- {type(date)} -------------------")
+
             if use_remote_db:
                 save_transactions(new_transaction)
             else:

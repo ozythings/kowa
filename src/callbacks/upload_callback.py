@@ -22,7 +22,8 @@ def parse_receipt_text(text: str, receipt_type: str):
     date = ""
     date_matches = re.findall(date_pattern, text)
     if date_matches:
-        date = date_matches[0]
+        raw_date = date_matches[0]
+        date = convert_ocr_date(raw_date)
 
     description = "Unknown Time"
     time_matches = re.findall(time_pattern, text, re.IGNORECASE)
@@ -38,6 +39,15 @@ def parse_receipt_text(text: str, receipt_type: str):
             description = f"Time: {time_matches[0]} Receipt ({receipt_type})"
 
     return amount, date, description
+
+def convert_ocr_date(raw_date):
+    for fmt in ("%d/%m/%Y", "%d/%m/%y", "%d-%m-%Y", "%d-%m-%y", "%d.%m.%Y", "%d.%m.%y"):
+        try:
+            parsed_date = datetime.strptime(raw_date, fmt)
+            date = parsed_date.strftime("%Y-%m-%d")
+            return date
+        except ValueError:
+            continue
 
 async def process_image_async(image_path):
     """
@@ -106,10 +116,10 @@ def upload_callback(app):
         return f"Upload successful!", preview, unique_filename
 
     @app.callback(
-        [Output("ocr-amount", "children"),
-         Output("ocr-date", "children"),
-         Output("ocr-category", "children"),
-         Output("ocr-description", "children"),
+        [Output("ocr-amount", "value"),
+         Output("ocr-date", "value"),
+         Output("ocr-category", "value"),
+         Output("ocr-description", "value"),
          Output("raw-ocr-text", "children")],
         [Input("process-button", "n_clicks")],
         [State("uploaded-image-path", "children"),

@@ -31,11 +31,11 @@ def spendings_layout(lang="en", use_remote_db=False):
                         html.H2(labels["add_transaction"], className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-blue-700"),
                         html.Div([
                             html.H3(labels["select_date"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
-                            # dcc.Input(
-                            #         id="input_date",
-                            #         type="date",
-                            #         className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                            #     ),
+                            dcc.Input(
+                                    id="input_date",
+                                    type="date",
+                                    className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                                ),
                         #     dcc.DatePickerSingle(
                         #         id='input_date',
                         #         placeholder='YYYY-MM-DD',
