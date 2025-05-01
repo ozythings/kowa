@@ -16,7 +16,7 @@ def dashboard_callback(app, use_remote_db=False):
         [Input('slct_year', 'value'),
         Input('slct_month', 'value')]
     )
-    @cache.memoize()
+    #@cache.memoize()
     def update_graph(selected_year, selected_month):
         # load data from the database
         transactions, monthly_budgets, categorical_budgets = load_database(use_remote_db)
@@ -37,13 +37,16 @@ def dashboard_callback(app, use_remote_db=False):
         # converting to date-time
         monthly_budgets['budgetmonth'] = pd.to_datetime(monthly_budgets['budgetmonth'])
 
-        # .iloc[0] retrieves the first value from the resulting series
         monthly_budget = monthly_budgets[
             (monthly_budgets['userid'] == userid()) &
             (monthly_budgets['budgetmonth'].dt.year == selected_year) &
             (monthly_budgets['budgetmonth'].dt.month == selected_month)
-        ]['totalbudget'].iloc[0]
-        # TODO: Handle the case where there is monthly budget available for the selected month (currently throws callback errors)
+        ]
+        if not monthly_budget.empty:
+            monthly_budget = monthly_budget['totalbudget'].iloc[0]
+        else:
+            monthly_budget = 0  # or None, or some fallback value
+            print(f"No budget found for user={userid()}, year={selected_year}, month={selected_month}")
 
         # filter categorical budgets for the logged-in user
         user_categorical_budgets = categorical_budgets[categorical_budgets['userid'] == userid()]

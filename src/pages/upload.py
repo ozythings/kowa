@@ -44,14 +44,18 @@ layout = html.Div(
                 ),
                 html.Button(
                     "Process",
-                    id="process-button",
+                    id="ocr-process-button",
                     className="w-full px-4 py-2 bg-green-500 text-white rounded mt-4",
                 ),
-                html.Button(
-                    "Add Transaction",
-                    id="ocr-add-transaction",
-                    className="w-full px-4 py-2 bg-gray-500 text-white rounded mt-4",
-                ),
+                html.Div(children=[
+
+                    html.Button(
+                        "Add Transaction",
+                        id="ocr-add-transaction",
+                        className="w-full px-4 py-2 bg-gray-500 text-white rounded mt-4",
+                    ),
+                ]),
+                html.Div("hey", id='ocr-transaction-status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600")
             ]
         ),
         

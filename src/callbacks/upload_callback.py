@@ -1,8 +1,10 @@
 from datetime import datetime
 import asyncio
 from dash import Dash, State, html, dcc, Output, Input
-import dash
 from dash.dash import base64
+
+from utils.load_data import load_local_transactions, save_local_transactions, save_transactions, userid
+from .spendings_callback import spendings_callback
 from flask import session
 from flask_caching import Cache
 from chrome_lens_py import LensAPI
@@ -83,7 +85,7 @@ def process_image_with_chrome_lens(image_path, image_type):
         print(f"Error processing image: {str(e)}")
         return f"Error: {str(e)}", "", "", f"OCR failed: {str(e)}"
 
-def upload_callback(app):
+def upload_callback(app, use_remote_db=False):
     @app.callback(
         [Output("upload-status", "children"),
          Output("preview-container", "children"),
@@ -121,7 +123,7 @@ def upload_callback(app):
          Output("ocr-category", "value"),
          Output("ocr-description", "value"),
          Output("raw-ocr-text", "children")],
-        [Input("process-button", "n_clicks")],
+        [Input("ocr-process-button", "n_clicks")],
         [State("uploaded-image-path", "children"),
          State("image-type", "value")]
     )
@@ -138,3 +140,43 @@ def upload_callback(app):
         except Exception as e:
             error_message = f"Processing error: {str(e)}"
             return error_message, "", "", "", error_message
+
+    # i know this is not the best way
+    # so stfu
+    @app.callback(
+        Output('ocr-transaction-status', 'children'),
+        Input('ocr-add-transaction', 'n_clicks'),
+        [State('ocr-date', 'value'), 
+        State('ocr-amount', 'value'), 
+        State('ocr-category', 'value'), 
+        State('ocr-description', 'value')]
+    )
+    def add_ocr_transaction(n_clicks, date, amount, category, description):
+        if n_clicks > 0 and date and amount and category:
+            new_transaction = {
+                'userid': userid(),
+                'date': date,
+                'categoryname': category,
+                'amount': amount, 
+                'description': description
+                }
+  
+            if use_remote_db:
+                save_transactions(new_transaction)
+            else:
+                transactions = load_local_transactions()
+                new_transaction.update({'transactionid': transactions['transactionid'].max() + 1})
+                new_transaction.update({'date': date + ' 00:00:00'})
+                transactions.loc[len(transactions)] = new_transaction
+                save_local_transactions(transactions)
+
+            return f"Transaction added: {date}, {amount}, {category}"
+        elif n_clicks > 0:
+            if not date:
+                return "Please enter a date"
+            elif not amount:
+                return "Please enter an amount"
+            elif not category:
+                return "Please enter a category"
+        return ""
+
