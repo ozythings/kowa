@@ -1,17 +1,22 @@
 from dash import html, dcc, dash_table, register_page
 from flask import session
+from i18n.spendings_labels import get_spendings_labels
 from pages.unauthorized import unauthorized_layout
 from utils.load_data import current_year, monthsToInt, load_categories, load_local_categories
 
 register_page(__name__, "/spendings")
 
-def spendings_layout(use_remote_db=False):
+def spendings_layout(lang="en", use_remote_db=False):
+
+    labels = get_spendings_labels(lang)
+
     if use_remote_db:
         categories_df = load_categories()
     else:
         categories_df = load_local_categories()
 
     return html.Div([
+
         html.Div([
             html.H1("Financial Management", className="text-2xl md:text-4xl font-extrabold mb-4 text-gray-800"),
             html.P(
@@ -23,14 +28,14 @@ def spendings_layout(use_remote_db=False):
                 # left Section (add transaction + monthly budget)
                 html.Div([
                     html.Div([
-                        html.H2("Add Transaction", className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-blue-700"),
+                        html.H2(labels["add_transaction"], className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-blue-700"),
                         html.Div([
-                            html.H3("Select date", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
-                            dcc.Input(
-                                    id="input_date",
-                                    type="date",
-                                    className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                                ),
+                            html.H3(labels["select_date"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            # dcc.Input(
+                            #         id="input_date",
+                            #         type="date",
+                            #         className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                            #     ),
                         #     dcc.DatePickerSingle(
                         #         id='input_date',
                         #         placeholder='YYYY-MM-DD',
@@ -40,7 +45,7 @@ def spendings_layout(use_remote_db=False):
                         ], className="w-full mb-4 md:mb-5"),
                         
                         html.Div([
-                            html.H3("Amount", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            html.H3(labels["amount"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
                             dcc.Input(
                                 id='input_amount',
                                 type='number',
@@ -184,8 +189,9 @@ def spendings_layout(use_remote_db=False):
         ], className="w-full max-w-6xl rounded-lg flex flex-col items-center justify-center p-4 md:p-8 text-left bg-[#f9fafb] border border-gray-200 shadow-md mx-2 md:mx-8 my-4 md:my-8")
     ], className="min-h-screen w-full overflow-auto flex justify-center items-center")
 
-def layout():
+def layout(**page_args):
     if session.get("logged_in"):
-        return spendings_layout(use_remote_db=False)
+        # print("---------\n",page_args,"---------\n")
+        return spendings_layout(page_args.get("lang"))
     else:
         return unauthorized_layout()
