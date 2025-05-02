@@ -33,7 +33,7 @@ def spendings_layout(lang="en", use_remote_db=False):
                             html.H3(labels["select_date"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
                             dcc.Input(
                                     id="input_date",
-                                    type="date",
+                                    type="date", # this breaks down new dash versions
                                     className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
                                 ),
                         #     dcc.DatePickerSingle(
@@ -74,7 +74,23 @@ def spendings_layout(lang="en", use_remote_db=False):
                                 className="w-full px-3 py-2 border border-gray-300 rounded text-xs md:text-sm"
                             )
                         ], className="w-full mb-4 md:mb-5"),
-                        
+
+                        html.Div([
+                            html.H3("Installment (months)", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            dcc.Slider(
+                                id='spendings-installment',
+                                min=0,
+                                max=24,
+                                value=0,
+                                marks={0: "No Installment"},
+                                step=1,
+                                tooltip={"placement": "bottom", "always_visible": False},
+                                className="mb-4"
+                            )
+                        ], className="w-full mb-4 md:mb-5"),
+
+                        html.Div(id='installment_value_display', className="text-xs md:text-sm text-gray-600 mt-2"),
+
                         html.Button('ADD', id='submit_transaction', n_clicks=0, 
                                   className="w-full py-2 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded shadow text-sm md:text-base"),
                         html.Div(id='transaction_status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600")
@@ -119,7 +135,7 @@ def spendings_layout(lang="en", use_remote_db=False):
                         html.Div(id='total_budget_status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600"),
                         html.Button('UPDATE', id='submit_total_budget', n_clicks=0, 
                                     className="w-full py-2 font-bold text-white bg-green-600 hover:bg-green-700 rounded shadow text-sm md:text-base"),
-                        html.Div(id='monthly_budget_status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600")
+                        html.Div(id='monthly_budget_status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600"),
                     ], className="mb-8 md:mb-0"),
                 ], className="flex flex-col space-y-8 md:space-y-0 md:space-x-8 md:flex-row md:w-1/2"),
                 

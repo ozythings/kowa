@@ -1,3 +1,4 @@
+from datetime import datetime
 from dash import Output, Input, State, no_update
 import pandas as pd
 from utils.load_data import (get_max_id, load_categories, userid, load_local_categories, load_local_transactions, load_local_monthly_budgets, 
@@ -14,29 +15,70 @@ def spendings_callback(app, use_remote_db=False):
         [State('input_date', 'value'), 
         State('input_amount', 'value'), 
         State('input_category', 'value'), 
-        State('input_description', 'value')]
+        State('input_description', 'value'),
+        State('spendings-installment', 'value')]
     )
-    def add_transaction(n_clicks, date, amount, category, description):
-        # if button has been clicked and all fields have been filled out
-        if n_clicks > 0 and date and amount and category:
+    def add_transaction(n_clicks, date, amount, category, description, installment):
+
+        current_time = datetime.now().strftime('%H:%M:%S')
+
+        # TODO: check for remote db
+        if n_clicks > 0 and date and amount and category and installment > 1:
+            base_transaction = {
+                'userid': userid(),
+                'categoryname': category,
+                'amount': amount / installment,
+            }
+
+            if use_remote_db:
+                for i in range(installment):
+                    current_transaction = base_transaction.copy()
+
+                    installment_date = add_months_to_date(date, i)
+                    current_transaction['date'] = f"{installment_date} {current_time}"
+                    current_transaction['description'] = f"{description} ({i+1}/{installment})" if description else f"{category} ({i+1}/{installment})"
+
+                    save_transactions(current_transaction)
+
+            else:
+                transactions = load_local_transactions()
+                next_id = transactions['transactionid'].max() + 1 if not transactions.empty else 1
+
+                for i in range(installment):
+                    current_transaction = base_transaction.copy()
+                    current_transaction['transactionid'] = next_id + i
+
+                    installment_date = add_months_to_date(date, i)
+                    current_transaction['date'] = f"{installment_date} {current_time}"
+                    current_transaction['description'] = f"{description} ({i+1}/{installment})" if description else f"{category} ({i+1}/{installment})"
+
+                    transactions.loc[len(transactions)] = current_transaction
+
+                save_local_transactions(transactions)
+
+            return f"Added {installment} installments of {amount / installment:.2f} for {category}"
+
+        elif n_clicks > 0 and date and amount and category:
             new_transaction = {
                 'userid': userid(),
                 'date': date,
                 'categoryname': category,
                 'amount': amount, 
                 'description': description
-                }
-  
+            }
+
             if use_remote_db:
                 save_transactions(new_transaction)
             else:
                 transactions = load_local_transactions() # load the latest transactions DB
                 new_transaction.update({'transactionid': transactions['transactionid'].max() + 1}) # increment the transaction ID
-                new_transaction.update({'date': date + ' 00:00:00'}) # append timestamp to align with the database schema
+                new_transaction.update({'date': f'{date} {current_time}'})
                 transactions.loc[len(transactions)] = new_transaction # append the new transaction to the DataFrame
                 save_local_transactions(transactions)
 
             return f"Transaction added: {date}, {amount}, {category}"
+
+
         elif n_clicks > 0:
             if not date:
                 return "Please select a date"
@@ -256,3 +298,25 @@ def spendings_callback(app, use_remote_db=False):
             return "Trigger Update"
         else:
             return no_update
+
+    #@app.callback(
+    #    Output('installment_value_display', 'children'),
+    #    Input('input_installment', 'value')
+    #)
+    #def update_installment_display(value):
+    #    if value == 0:
+    #        return ""
+    #    return f"Selected: {value} month{'s' if value > 1 else ''}"
+
+
+def add_months_to_date(date_str, months):
+    from datetime import datetime
+    from dateutil.relativedelta import relativedelta
+    
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+    new_date = date_obj + relativedelta(months=months)
+    return new_date.strftime('%Y-%m-%d')
+
+
+def test_spendings(amount, category, installment, date, current_time, description, use_remote_db):
+    pass

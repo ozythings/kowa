@@ -55,7 +55,7 @@ layout = html.Div(
                         className="w-full px-4 py-2 bg-gray-500 text-white rounded mt-4",
                     ),
                 ]),
-                html.Div("hey", id='ocr-transaction-status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600")
+                html.Div(id='ocr-transaction-status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600")
             ]
         ),
         
