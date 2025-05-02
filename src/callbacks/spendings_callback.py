@@ -42,11 +42,17 @@ def spendings_callback(app, use_remote_db=False):
 
             else:
                 transactions = load_local_transactions()
-                next_id = transactions['transactionid'].max() + 1 if not transactions.empty else 1
 
                 for i in range(installment):
+
+                    if 'transactionid' in transactions.columns and not transactions['transactionid'].isnull().all():
+                        next_id = transactions['transactionid'].max() + 1
+                    else:
+                        next_id = 0
+
                     current_transaction = base_transaction.copy()
-                    current_transaction['transactionid'] = next_id + i
+                    current_transaction['transactionid'] = int(next_id)
+                    transactions['transactionid'] = transactions['transactionid'].astype('Int64')
 
                     installment_date = add_months_to_date(date, i)
                     current_transaction['date'] = f"{installment_date} {current_time}"
@@ -70,10 +76,19 @@ def spendings_callback(app, use_remote_db=False):
             if use_remote_db:
                 save_transactions(new_transaction)
             else:
-                transactions = load_local_transactions() # load the latest transactions DB
-                new_transaction.update({'transactionid': transactions['transactionid'].max() + 1}) # increment the transaction ID
+                transactions = load_local_transactions()
+
+                # fix for nan transactionid values
+                if 'transactionid' in transactions.columns and not transactions['transactionid'].isnull().all():
+                    next_id = transactions['transactionid'].max() + 1
+                else:
+                    next_id = 0
+
+                new_transaction['transactionid'] = int(next_id)
+                transactions['transactionid'] = transactions['transactionid'].astype('Int64')
+
                 new_transaction.update({'date': f'{date} {current_time}'})
-                transactions.loc[len(transactions)] = new_transaction # append the new transaction to the DataFrame
+                transactions.loc[len(transactions)] = new_transaction
                 save_local_transactions(transactions)
 
             return f"Transaction added: {date}, {amount}, {category}"
