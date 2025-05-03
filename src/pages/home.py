@@ -10,9 +10,9 @@ def home_layout(lang="en"):
     labels = get_home_labels(lang)
 
     if session.get("logged_in"):
-        hero_btn = dcc.Link(labels["hero_btn_dashboard"], href="/dashboard", className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700")
+        hero_btn = dcc.Link(labels["hero_btn_dashboard"], href=f"/dashboard?lang={lang}", className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700")
     else:
-        hero_btn = dcc.Link(labels["hero_btn_signup"], href="/signup", className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700")
+        hero_btn = dcc.Link(labels["hero_btn_signup"], href=f"/signup?lang={lang}", className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700")
 
     return html.Div([
         # hero

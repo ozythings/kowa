@@ -5,5 +5,5 @@ from sqlalchemy.engine.reflection import cache
 from flask_caching import Cache
 from flask import session
 
-def navbar():
+def navbar(lang="en"):
     return html.Div(id="navbar")

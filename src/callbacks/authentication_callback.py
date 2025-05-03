@@ -78,7 +78,7 @@ def authentication_callback(app, use_remote_db=False):
         return ''
    
     @app.callback(
-        Output('url', 'pathname', allow_duplicate=True),  # update the pathname of the Location component to trigger the redirect
+        Output('url', 'pathname', allow_duplicate=True),
         Input('login_button', 'n_clicks'),
         Input('login_status', 'data'),
         prevent_initial_call=True

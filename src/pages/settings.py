@@ -6,7 +6,7 @@ from pages.unauthorized import unauthorized_layout
 
 dash.register_page(__name__, path="/settings")
 
-def settings_layout():
+def settings_layout(lang="en"):
     return html.Div(
         [
             html.Div(
@@ -125,8 +125,8 @@ def settings_layout():
         className="min-h-screen bg-gray-100"
     )
 
-def layout():
+def layout(**page_args):
     if session.get("logged_in"):
-        return settings_layout()
+        return settings_layout(page_args.get("lang"))
     else:
-        return unauthorized_layout()
+        return unauthorized_layout(page_args.get("lang"))

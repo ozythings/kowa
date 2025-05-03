@@ -2,6 +2,7 @@ from callbacks import dashboard_callback, spendings_callback, authentication_cal
 from callbacks import navbar_callback
 from callbacks import debug_callback
 from callbacks import upload_callback
+from utils.url_helpers import url_helper_callback
 
 def register_callbacks(app, use_remote_db):
     authentication_callback(app, use_remote_db)
@@ -13,3 +14,4 @@ def register_callbacks(app, use_remote_db):
     navbar_callback(app) 
     debug_callback(app)
     upload_callback(app)
+    url_helper_callback(app)

@@ -1,12 +1,16 @@
 from dash import html, dcc, dash_table, register_page
 from flask import session
 import pandas as pd
+from i18n.dashboard_labels import get_dashboard_labels
 from pages.unauthorized import unauthorized_layout
 from utils.load_data import current_month, current_year, monthsToInt, load_transactions, load_local_transactions
 
 register_page(__name__, path='/dashboard', name='Dashboard', title='Budget Dashboard')
 
-def dashboard_layout(use_remote_db=False):
+def dashboard_layout(lang="en", use_remote_db=False):
+    
+    labels = get_dashboard_labels(lang)
+
     if use_remote_db:
         transactions = load_transactions()
     else:
@@ -28,9 +32,9 @@ def dashboard_layout(use_remote_db=False):
     return html.Div([
         html.Div([
             html.Div([
-                html.H1("Year and Month", className="text-xl font-bold mb-4"),
+                html.H1(labels["year_month_title"], className="text-xl font-bold mb-4"),
                 html.Div([
-                    html.H2('Select year:', className="text-lg font-medium mb-2"),
+                    html.H2(labels["select_year"], className="text-lg font-medium mb-2"),
                     dcc.Dropdown(
                         id="slct_year",
                         options=[
@@ -38,32 +42,32 @@ def dashboard_layout(use_remote_db=False):
                         ],
                         multi=False,
                         value=last_transaction_year,
-                        placeholder="Select year",
+                        placeholder=labels["select_year"],
                         className='w-full mb-4',
                     ),
                 ], className='mb-4'),
                 html.Div([
-                    html.H2('Select month:', className="text-lg font-medium mb-2"),
+                    html.H2(labels["select_month"], className="text-lg font-medium mb-2"),
                     dcc.Dropdown(
                         id="slct_month",
                         options=[{'label': key, 'value': value} for key, value in monthsToInt().items()],
                         multi=False,
                         value=last_transaction_month,
-                        placeholder="Select month",
+                        placeholder=labels["select_month"],
                         className='w-full',
                     )
                 ])
             ], className='bg-white p-6 rounded-lg shadow-md mb-6'),
 
             html.Div([
-                html.H1("Net Balance", className="text-xl font-bold mb-2"),
+                html.H1(labels["net_balance_title"], className="text-xl font-bold mb-2"),
                 html.P(id='net-balance-output', className='p-4 bg-gray-100 rounded-md text-lg mb-4'),
-                html.H1("Performance", className="text-xl font-bold mb-2"),
+                html.H1(labels["performance_title"], className="text-xl font-bold mb-2"),
                 html.P(id='status-output', className='p-4 bg-gray-100 rounded-md text-lg')
             ], className='bg-white p-6 rounded-lg shadow-md mb-6'),
 
             html.Div([
-                html.H1("Expense Categorization", className="text-xl font-bold mb-4"),
+                html.H1(labels["expense_categorization_title"], className="text-xl font-bold mb-4"),
                 dcc.Graph(id='expense_categorization_graph', figure={}),
             ], className='bg-white p-6 rounded-lg shadow-md')
         ], className='w-1/3 pr-4'),
@@ -71,25 +75,25 @@ def dashboard_layout(use_remote_db=False):
         html.Div([
             html.Div([
                 html.Div([
-                    html.H1("Daily Spending Trend", className="text-xl font-bold mb-4"),
+                    html.H1(labels["daily_spending_title"], className="text-xl font-bold mb-4"),
                     dcc.Graph(id='daily_spending_trend_graph', figure={}, className="placeholder-black"),
                 ], className='bg-white p-6 rounded-lg shadow-md mb-6'),
 
                 html.Div([
-                    html.H1("Budget vs. Spending Per Category", className="text-xl font-bold mb-4"),
+                    html.H1(labels["budget_vs_spending_title"], className="text-xl font-bold mb-4"),
                     dcc.Graph(id='budget_vs_actual_spending_graph', figure={}),
                 ], className='bg-white p-6 rounded-lg shadow-md'),
             ], className='mb-6'),
 
             html.Div([
-                html.H1("Recent Transactions", className="text-xl font-bold mb-4"),
+                html.H1(labels["recent_transactions_title"], className="text-xl font-bold mb-4"),
                 dash_table.DataTable(
                     id='transactions_table',
                     columns=[
-                        {"name": "Date", "id": "date_display"},
-                        {"name": "Category Name", "id": "categoryname"},
-                        {"name": "Amount", "id": "amount"},
-                        {"name": "Description", "id": "description"}
+                        {"name": labels["table_headers"]["date"], "id": "date_display"},
+                        {"name": labels["table_headers"]["category"], "id": "categoryname"},
+                        {"name": labels["table_headers"]["amount"], "id": "amount"},
+                        {"name": labels["table_headers"]["description"], "id": "description"}
                     ],
                     data=transactions.to_dict('records'),
                     style_table={'overflowX': 'auto'},
@@ -112,9 +116,8 @@ def dashboard_layout(use_remote_db=False):
         ], className='w-2/3')
     ], className='flex flex-wrap p-6 bg-gray-50')
 
-def layout():
+def layout(**page_args):
     if session.get("logged_in"):
-        return dashboard_layout()
+        return dashboard_layout(page_args.get("lang"))
     else:
-        return unauthorized_layout()
-
+        return unauthorized_layout(page_args.get("lang"))

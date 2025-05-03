@@ -3,41 +3,50 @@ import dash
 from flask import session
 from flask_caching import Cache
 
+from i18n.navbar_labels import get_navbar_labels
+from utils.url_helpers import get_lang_from_query
+
 def navbar_callback(app):
     @app.callback(
         Output('navbar', 'children'),
-        Input('url', 'pathname')
+        Input('url', 'pathname'),
+        State('url', 'search')
     )
-    def update_navbar(_):
+    def update_navbar(_, search):
+
+        lang = get_lang_from_query(search) or "en"
+
+        labels = get_navbar_labels(lang)
         logged_in = session.get("logged_in", False)
 
         nav_links = []
 
+        # TODO: write a wrapper for language
+        # use lang-store maybe?
         if logged_in:
             nav_links.extend([
-                dcc.Link("Dashboard", href='/dashboard', className='text-lg text-white hover:underline'),
-                dcc.Link("Spendings", href='/spendings', className='text-lg text-white hover:underline'),
-                dcc.Link("Upload", href='/upload', className='text-lg text-white hover:underline'),
-                dcc.Link("Settings", href='/settings', className='text-lg text-white hover:underline'),
+                dcc.Link(labels["dashboard"], href=f'/dashboard?lang={lang}', className='text-lg text-white hover:underline'),
+                dcc.Link(labels["spendings"], href=f'/spendings?lang={lang}', className='text-lg text-white hover:underline'),
+                dcc.Link(labels["upload"], href=f'/upload?lang={lang}', className='text-lg text-white hover:underline'),
+                dcc.Link(labels["settings"], href=f'/settings?lang={lang}', className='text-lg text-white hover:underline'),
                 html.Button(
-                    "Logout",
+                    labels["logout"],
                     id="logout_button",
                     className="px-4 py-2 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                 )
             ])
         else:
             nav_links.extend([
-                dcc.Link("Sign in", href='/signin', className='text-lg text-white hover:underline'),
-                dcc.Link("Sign up", href='/signup', className='text-lg text-white hover:underline'),
-
+                dcc.Link(labels["signin"], href=f'/signin?lang={lang}', className='text-lg text-white hover:underline'),
+                dcc.Link(labels["signup"], href=f'/signup?lang={lang}', className='text-lg text-white hover:underline'),
             ])
 
         return html.Div([
             html.Div([
                 html.Div([
                     dcc.Link(
-                        html.H1("kowa", className='text-3xl font-bold text-white'),
-                        href='/',
+                        html.H1(labels["app_name"], className='text-3xl font-bold text-white'),
+                        href=f'/?lang={lang}',
                         className='flex-shrink-0'
                     ),
                     html.Button(
