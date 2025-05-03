@@ -1,9 +1,9 @@
 from dash import html, dcc, dash_table, register_page
 from flask import session
 import pandas as pd
-from i18n.dashboard_labels import get_dashboard_labels
+from i18n.dashboard_labels import get_category_labels, get_correct_category_labels, get_dashboard_labels
 from pages.unauthorized import unauthorized_layout
-from utils.load_data import current_month, current_year, monthsToInt, load_transactions, load_local_transactions
+from utils.load_data import current_month, current_year, load_categories, load_local_categories, monthsToInt, load_transactions, load_local_transactions
 
 register_page(__name__, path='/dashboard', name='Dashboard', title='Budget Dashboard')
 
@@ -13,12 +13,22 @@ def dashboard_layout(lang="en", use_remote_db=False):
 
     if use_remote_db:
         transactions = load_transactions()
+        categories_df = load_categories()
     else:
         transactions = load_local_transactions()
+        categories_df = load_local_categories()
 
     transactions['date'] = pd.to_datetime(transactions['date'])
     transactions['date_display'] = transactions['date'].dt.strftime('%Y-%m-%d')
     transactions.sort_values('date', ascending=False, inplace=True)  # Sort by date descending
+
+    category_labels = get_category_labels(lang)
+    transactions_tr = transactions.copy()
+    transactions_tr['categoryname'] = transactions_tr['categoryname'].map(category_labels)
+    transactions_tr['date_display'] = pd.to_datetime(transactions_tr['date']).dt.strftime('%Y-%m-%d')
+
+    print("--------------------\n", transactions_tr)
+
 
     # find the last transaction date to set the default year and month
     if not transactions.empty:
@@ -95,7 +105,7 @@ def dashboard_layout(lang="en", use_remote_db=False):
                         {"name": labels["table_headers"]["amount"], "id": "amount"},
                         {"name": labels["table_headers"]["description"], "id": "description"}
                     ],
-                    data=transactions.to_dict('records'),
+                    data=transactions_tr.to_dict('records'),
                     style_table={'overflowX': 'auto'},
                     style_cell={
                         'padding': '12px',
@@ -115,6 +125,15 @@ def dashboard_layout(lang="en", use_remote_db=False):
             ], className='bg-white p-6 rounded-lg shadow-md')
         ], className='w-2/3')
     ], className='flex flex-wrap p-6 bg-gray-50')
+
+def categories_from_records(records, lang="en"):
+    category_mapping = get_category_labels(lang)
+    
+    for row in records:
+        original_name = row['categoryname']
+        row['categoryname'] = category_mapping.get(original_name, original_name)
+
+    return records
 
 def layout(**page_args):
     if session.get("logged_in"):

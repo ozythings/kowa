@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 from utils.load_data import userid, load_database, cache
 from utils.url_helpers import get_lang_from_query
-from i18n.dashboard_labels import get_category_labels, get_correct_category_labels, get_dashboard_callback_labels
+from i18n.dashboard_labels import get_category_labels, get_correct_category_labels, get_dashboard_callback_labels, get_dashboard_labels
 
 def dashboard_callback(app, use_remote_db=False):
 
@@ -74,7 +74,14 @@ def dashboard_callback(app, use_remote_db=False):
         daily_spending_trend_fig = update_daily_spending_trend_graph(filtered, monthly_budget, labels)
         budget_vs_actual_spending_fig = update_budget_vs_actual_spending_graph(filtered, user_categorical_budgets, labels, category_labels, lang)
         
-        transactions_table_data = filtered[['date', 'categoryname', 'amount', 'description']].to_dict('records')
+        labels = get_dashboard_labels(lang)
+        category_labels = get_category_labels(lang)
+        transactions_tr = filtered.copy()
+        transactions_tr['categoryname'] = transactions_tr['categoryname'].map(category_labels)
+        transactions_tr['date_display'] = pd.to_datetime(transactions_tr['date']).dt.strftime('%Y-%m-%d')
+
+        # for christ sake i've found the problem -_-
+        transactions_table_data = transactions_tr.to_dict('records')
 
         # same order as in the output call-back
         return net_balance_output, status_output, expense_categorization_fig, daily_spending_trend_fig, budget_vs_actual_spending_fig, transactions_table_data

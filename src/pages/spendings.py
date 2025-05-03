@@ -170,7 +170,7 @@ def spendings_layout(lang="en", use_remote_db=False):
                     ], className="mb-8"),
                     
                     html.Div([
-                        html.H2("Budget Overview", className="text-xl md:text-2xl font-semibold mb-4 text-gray-800"),
+                        html.H2(labels["budget_overview"], className="text-xl md:text-2xl font-semibold mb-4 text-gray-800"),
                         dash_table.DataTable(
                             id='budget_table',
                             columns=[

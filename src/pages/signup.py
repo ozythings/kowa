@@ -54,7 +54,7 @@ def signup_layout(lang="en"):
                     ], className='text-center')
                 ], className='w-full max-w-md mx-auto')
             ], className='w-full max-w-2xl mx-auto bg-white p-8 md:p-12 rounded-lg shadow-md')
-        ], className='flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50')
+        ], className='flex justify-center items-center min-h-screen bg-gray-100 px-4')
     ], className='min-h-screen flex flex-col')
 
 def layout(**page_args):

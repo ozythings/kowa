@@ -159,7 +159,7 @@ def spendings_callback(app, use_remote_db=False):
                 total_budget = int(monthly_budget_row['totalbudget'].values[0]) #type: ignore
 
             # Display the monhtly budget status message
-            monthly_budget_status = f"{labels['your_budget']} {selected_date.strftime('%B %Y')} : ${total_budget}"
+            monthly_budget_status = f"{labels['your_budget']} {selected_date.strftime('%B %Y')} : {total_budget}₺"
         else:
             # display the last budget entry date if no month is selected
             last_entry_date = monthly_budgets['budgetmonth'].max()
