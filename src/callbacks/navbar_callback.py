@@ -1,3 +1,4 @@
+from urllib.parse import parse_qs, urlencode
 from dash import Dash, State, html, dcc, Output, Input
 import dash
 from flask import session
@@ -25,6 +26,17 @@ def navbar_callback(app):
         # use lang-store maybe?
         if logged_in:
             nav_links.extend([
+                dcc.Dropdown(
+                    id="language-selector",
+                    options=[
+                        {"label": "English", "value": "en"},
+                        {"label": "Türkçe", "value": "tr"}
+                    ],
+                    value=None,
+                    clearable=False,
+                    style={"width": "150px"},
+                    placeholder=labels["select_language"]
+                ),
                 dcc.Link(labels["dashboard"], href=f'/dashboard?lang={lang}', className='text-lg text-white hover:underline'),
                 dcc.Link(labels["spendings"], href=f'/spendings?lang={lang}', className='text-lg text-white hover:underline'),
                 dcc.Link(labels["upload"], href=f'/upload?lang={lang}', className='text-lg text-white hover:underline'),
@@ -37,6 +49,17 @@ def navbar_callback(app):
             ])
         else:
             nav_links.extend([
+                dcc.Dropdown(
+                    id="language-selector",
+                    options=[
+                        {"label": "English", "value": "en"},
+                        {"label": "Türkçe", "value": "tr"}
+                    ],
+                    value=None,
+                    clearable=False,
+                    style={"width": "150px"},
+                    placeholder=labels["select_language"]
+                ),
                 dcc.Link(labels["signin"], href=f'/signin?lang={lang}', className='text-lg text-white hover:underline'),
                 dcc.Link(labels["signup"], href=f'/signup?lang={lang}', className='text-lg text-white hover:underline'),
             ])
@@ -107,3 +130,4 @@ def navbar_callback(app):
             new_line3_class = line3_class.replace(' -rotate-45 -translate-y-2', '')
         
         return new_menu_class, new_line1_class, new_line2_class, new_line3_class
+

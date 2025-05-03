@@ -90,7 +90,7 @@ def get_dashboard_callback_labels(lang="en"):
                 "very_poor":"ÇOK KÖTÜ",
                 "extremely_poor":"AŞIRI KÖTÜ",
                 "critical":"KRİTİK",
-                "severe": "BATAK",
+                "severe": "İFLASVARİ",
             },
             "total_spent": "Toplam harcama: ${:,.2f}",
             "net_balance": "Net bakiye: ${:,.2f}",

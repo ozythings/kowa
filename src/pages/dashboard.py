@@ -48,7 +48,7 @@ def dashboard_layout(lang="en", use_remote_db=False):
                     dcc.Dropdown(
                         id="slct_year",
                         options=[
-                            {'label': str(year), 'value': year} for year in range(2023, (current_year()+1)+1)
+                            {'label': str(year), 'value': year} for year in range(current_year()-2, current_year()+3)
                         ],
                         multi=False,
                         value=last_transaction_year,

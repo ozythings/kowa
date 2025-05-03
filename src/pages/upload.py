@@ -4,6 +4,7 @@ import os
 
 from flask import session
 
+from i18n.dashboard_labels import get_category_labels
 from i18n.upload_labels import get_upload_labels
 from pages.unauthorized import unauthorized_layout
 
@@ -14,6 +15,7 @@ if not os.path.exists("temp_uploads"):
 
 def upload_layout(lang="en"):
     labels = get_upload_labels(lang)
+    category_labels = get_category_labels(lang)
 
     return html.Div(
         className="flex flex-col lg:flex-row p-5 space-y-4 lg:space-x-4",
@@ -42,12 +44,12 @@ def upload_layout(lang="en"):
                     dcc.Dropdown(
                         id="image-type",
                         options=[
-                            {"label": "BIM", "value": "Miscellaneous"},
-                            {"label": "A101", "value": "Miscellaneous"},
-                            {"label": "EKENT", "value": "Transportation"},
-                            {"label": "OTHER", "value": "Miscellaneous"},
+                            {"label": "BIM", "value": "BIM"},
+                            {"label": "A101", "value": "A101"},
+                            {"label": "EKENT", "value": "EKENT"},
+                            {"label": "OTHER", "value": "OTHER"},
                         ],
-                        value="BIM",  # Default value
+                        value=None,  # Default value
                         className="w-full p-2 border rounded",
                     ),
                     html.Button(

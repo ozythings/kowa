@@ -12,7 +12,11 @@ def get_upload_labels(lang="en"):
             "category_label": "Category:",
             "description_label": "Description:",
             "raw_ocr_text_title": "Raw OCR Text",
-            "drag_and_drop": "Drag and Drop or "
+            "drag_and_drop": "Drag and Drop or ",
+            "time": "Time",
+            "unknown_time": "Unknown Time",
+            "receipt": "Receipt",
+            "transaction_added": "Transaction added",
         },
         "tr": {
             "upload_title": "Görüntü Yükle",
@@ -26,7 +30,11 @@ def get_upload_labels(lang="en"):
             "category_label": "Kategori:",
             "description_label": "Açıklama:",
             "raw_ocr_text_title": "İşlenmemiş OCR Metni",
-            "drag_and_drop": "Sürükle bırak ya da "
+            "drag_and_drop": "Sürükle bırak ya da ",
+            "time": "Zaman",
+            "unknown_time": "Bilinmeyen zaman",
+            "receipt": "Fiş",
+            "transaction_added": "İşlem eklendi",
         },
     }
     return all_labels.get(lang, all_labels["en"])

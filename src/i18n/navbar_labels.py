@@ -9,6 +9,7 @@ def get_navbar_labels(lang="en"):
             "signin": "Sign in",
             "signup": "Sign up",
             "app_name": "kowa",
+            "select_language": "Select Language"
         },
         "tr": {
             "dashboard": "Gösterge Paneli",
@@ -19,6 +20,7 @@ def get_navbar_labels(lang="en"):
             "signin": "Giriş Yap",
             "signup": "Kayıt Ol",
             "app_name": "kowa",
+            "select_language": "Dil Seç"
         },
     }
     return all_labels.get(lang, all_labels["en"])

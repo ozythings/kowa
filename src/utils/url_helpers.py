@@ -1,5 +1,6 @@
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlencode
 from dash import Input, Output, State
+import dash
 from dash.dash import urlparse
 
 def get_lang_from_query(query_search):
@@ -12,15 +13,17 @@ def get_lang_from_query(query_search):
 def url_helper_callback(app):
     @app.callback(
         Output('url', 'href'),
-        Input('lang-store', 'data'),
-        State('url', 'pathname')
+        Input('language-selector', 'value'),  # ✅ Use dropdown directly
+        State('url', 'pathname'),
+        State('url', 'search'),
+        prevent_initial_call=True  # optional: avoid redirect on first load
     )
-    def update_url_with_lang(lang_data, pathname):
-        lang = lang_data.get('lang', 'en')
+    def update_url_with_lang(selected_lang, pathname, search):
+        if not selected_lang:
+            raise dash.exceptions.PreventUpdate
 
-        parsed_url = urlparse(pathname)
-        query_params = parse_qs(parsed_url.query)
-        query_params['lang'] = lang
-        query = '&'.join([f"{key}={value[0]}" for key, value in query_params.items()])
+        query = parse_qs(search.lstrip("?"))
+        query["lang"] = [selected_lang]
+        updated_query = urlencode(query, doseq=True)
 
-        return f'{pathname}?{query}'
+        return f"{pathname}?{updated_query}"
