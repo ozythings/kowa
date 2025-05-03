@@ -66,13 +66,29 @@ def home_layout(lang="en"):
                 html.H2(labels["about_creators"], className="text-2xl font-bold text-center mb-10"),
                 html.Div([
                     html.Div([
-                        html.H3(labels["creator_name"], className='text-xl font-semibold'),
+                        html.H3("Oğuzhan", className='text-xl font-semibold'),
                         html.P(labels["creator_desc"]),
                         html.Div([
-                            dcc.Link(labels["creator_linkedin"], href='https://www.linkedin.com/in/hm', className='text-blue-500 underline mr-4', target='_blank'),
+                            #dcc.Link(labels["creator_linkedin"], href='https://www.linkedin.com/in/hm', className='text-blue-500 underline mr-4', target='_blank'),
                             dcc.Link(labels["creator_github"], href='https://github.com/ozythings', className='text-blue-500 underline', target='_blank')
-                        ], className='mt-2')
-                    ], className='text-center')
+                        ], className='mt-1')
+                    ], className='text-center mt-5'),
+                    html.Div([
+                        html.H3("Yusuf", className='text-xl font-semibold'),
+                        html.P(labels["creator_desc"]),
+                        html.Div([
+                            dcc.Link(labels["creator_github"], href='https://github.com/yuswf', className='text-blue-500 underline', target='_blank')
+                        ], className='mt-1')
+                    ], className='text-center mt-5'),
+
+                    html.Div([
+                        html.H3("Ahmet", className='text-xl font-semibold'),
+                        html.P(labels["creator_desc"]),
+                        html.Div([
+                            dcc.Link(labels["creator_github"], href='#', className='text-blue-500 underline', target='_blank')
+                        ], className='mt-1')
+                    ], className='text-center mt-5'),
+
                 ], className='flex flex-col items-center mb-10')
             ], className='bg-gray-50 py-20')
         ]),
