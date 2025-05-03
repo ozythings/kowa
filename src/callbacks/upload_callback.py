@@ -152,6 +152,7 @@ def upload_callback(app, use_remote_db=False):
         State('ocr-description', 'value')]
     )
     def add_ocr_transaction(n_clicks, date, amount, category, description):
+        current_time = datetime.now().strftime('%H:%M:%S')
         if n_clicks > 0 and date and amount and category:
             new_transaction = {
                 'userid': userid(),
@@ -159,24 +160,33 @@ def upload_callback(app, use_remote_db=False):
                 'categoryname': category,
                 'amount': amount, 
                 'description': description
-                }
-  
+            }
+
             if use_remote_db:
                 save_transactions(new_transaction)
             else:
                 transactions = load_local_transactions()
-                new_transaction.update({'transactionid': transactions['transactionid'].max() + 1})
-                new_transaction.update({'date': date + ' 00:00:00'})
+
+                # fix for nan transactionid values
+                if 'transactionid' in transactions.columns and not transactions['transactionid'].isnull().all():
+                    next_id = transactions['transactionid'].max() + 1
+                else:
+                    next_id = 0
+
+                new_transaction['transactionid'] = int(next_id)
+                transactions['transactionid'] = transactions['transactionid'].astype('Int64')
+
+                new_transaction.update({'date': f'{date} {current_time}'})
                 transactions.loc[len(transactions)] = new_transaction
                 save_local_transactions(transactions)
 
             return f"Transaction added: {date}, {amount}, {category}"
+
         elif n_clicks > 0:
             if not date:
-                return "Please enter a date"
+                return "Please select a date"
             elif not amount:
                 return "Please enter an amount"
             elif not category:
-                return "Please enter a category"
-        return ""
-
+                return "Please select a category"
+        return "" # button not clicked

@@ -42,10 +42,10 @@ def upload_layout(lang="en"):
                     dcc.Dropdown(
                         id="image-type",
                         options=[
-                            {"label": "BIM", "value": "BIM"},
-                            {"label": "A101", "value": "A101"},
-                            {"label": "EKENT", "value": "EKENT"},
-                            {"label": "OTHER", "value": "Other"},
+                            {"label": "BIM", "value": "Miscellaneous"},
+                            {"label": "A101", "value": "Miscellaneous"},
+                            {"label": "EKENT", "value": "Transportation"},
+                            {"label": "OTHER", "value": "Miscellaneous"},
                         ],
                         value="BIM",  # Default value
                         className="w-full p-2 border rounded",

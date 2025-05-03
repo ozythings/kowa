@@ -288,21 +288,37 @@ def current_month():
 
 # dictionary to convert month names to integer values, and vice versa
 
-def monthsToInt():
-    return {
-        'January': 1,
-        'February': 2,
-        'March': 3,
-        'April': 4,
-        'May': 5,
-        'June': 6,
-        'July': 7,
-        'August': 8,
-        'September': 9,
-        'October': 10,
-        'November': 11,
-        'December': 12
+def monthsToInt(lang="en"):
+    if lang == "en":
+        return {
+            'January': 1,
+            'February': 2,
+            'March': 3,
+            'April': 4,
+            'May': 5,
+            'June': 6,
+            'July': 7,
+            'August': 8,
+            'September': 9,
+            'October': 10,
+            'November': 11,
+            'December': 12
     }
+    else:
+        return {
+            'Ocak': 1,
+            'Şubat': 2,
+            'Mart': 3,
+            'Nisan': 4,
+            'Mayıs': 5,
+            'Haziran': 6,
+            'Temmuz': 7,
+            'Ağustos': 8,
+            'Eylül': 9,
+            'Ekim': 10,
+            'Kasım': 11,
+            'Aralık': 12
+        }
 
 def IntToMonths():
     return {v: k for k, v in monthsToInt().items()}

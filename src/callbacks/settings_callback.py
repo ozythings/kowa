@@ -7,27 +7,27 @@ from utils.load_data import global_engine, load_local_users
 def settings_callback(app, use_remote_db=False):
 
     # update user profile callback
-    @app.callback(
-        Output('update_profile_status', 'children'),
-        [Input('update_profile_button', 'n_clicks')],
-        [State('profile_name', 'value'), 
-         State('profile_email', 'value')]
-    )
-    def update_profile(n_clicks, name, email):
-        if n_clicks and n_clicks > 0:
-            if name and email:
-                userid = session.get('user_id')
-                
-                if userid:
-                    if use_remote_db:
-                        update_remote_user_profile(userid, name, email)
-                    else:
-                        update_local_user_profile(userid, name, email)
-                    return 'Profile updated successfully'
-                else:
-                    return 'User not logged in'
-            return 'Please fill out all fields'
-        return ''
+    # @app.callback(
+    #     Output('update_profile_status', 'children'),
+    #     [Input('update_profile_button', 'n_clicks')],
+    #     [State('profile_name', 'value'), 
+    #      State('profile_email', 'value')]
+    # )
+    # def update_profile(n_clicks, name, email):
+    #     if n_clicks and n_clicks > 0:
+    #         if name and email:
+    #             userid = session.get('user_id')
+    #             
+    #             if userid:
+    #                 if use_remote_db:
+    #                     update_remote_user_profile(userid, name, email)
+    #                 else:
+    #                     update_local_user_profile(userid, name, email)
+    #                 return 'Profile updated successfully'
+    #             else:
+    #                 return 'User not logged in'
+    #         return 'Please fill out all fields'
+    #     return ''
 
     # update user password callback
     @app.callback(

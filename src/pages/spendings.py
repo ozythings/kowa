@@ -1,5 +1,6 @@
 from dash import html, dcc, dash_table, register_page
 from flask import session
+from i18n.dashboard_labels import get_category_labels
 from i18n.spendings_labels import get_spendings_labels
 from pages.unauthorized import unauthorized_layout
 from utils.load_data import current_year, monthsToInt, load_categories, load_local_categories
@@ -9,6 +10,7 @@ register_page(__name__, "/spendings")
 def spendings_layout(lang="en", use_remote_db=False):
 
     labels = get_spendings_labels(lang)
+    category_labels = get_category_labels(lang)
 
     if use_remote_db:
         categories_df = load_categories()
@@ -18,9 +20,9 @@ def spendings_layout(lang="en", use_remote_db=False):
     return html.Div([
 
         html.Div([
-            html.H1("Financial Management", className="text-2xl md:text-4xl font-extrabold mb-4 text-gray-800"),
+            html.H1(labels["financial_management"], className="text-2xl md:text-4xl font-extrabold mb-4 text-gray-800"),
             html.P(
-                'Enter your expenses and customize your budget categories on this page to keep your finances organized and under control.',
+                labels["top_info"],
                 className="font-medium text-gray-700 mb-6 md:mb-10 text-sm md:text-lg max-w-3xl"
             ),
 
@@ -36,12 +38,6 @@ def spendings_layout(lang="en", use_remote_db=False):
                                     type="date", # this breaks down new dash versions
                                     className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
                                 ),
-                        #     dcc.DatePickerSingle(
-                        #         id='input_date',
-                        #         placeholder='YYYY-MM-DD',
-                        #         display_format='YYYY-MM-DD',
-                        #         className="w-full"
-                        #     )
                         ], className="w-full mb-4 md:mb-5"),
                         
                         html.Div([
@@ -50,39 +46,39 @@ def spendings_layout(lang="en", use_remote_db=False):
                                 id='input_amount',
                                 type='number',
                                 min=0,
-                                placeholder='enter amount',
+                                placeholder=labels["enter_amount"],
                                 className="w-full px-3 py-2 border border-gray-300 rounded text-xs md:text-sm"
                             )
                         ], className="w-full mb-4 md:mb-5"),
                         
                         html.Div([
-                            html.H3("Category", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            html.H3(labels["category"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
                             dcc.Dropdown(
                                 id='input_category',
-                                options=[{'label': category, 'value': category} for category in categories_df['name']],
-                                placeholder='select category',
+                                options=[{'label': category_labels[category], 'value': category} for category in categories_df['name']],
+                                placeholder=labels["select_category"],
                                 className="text-xs md:text-sm"
                             )
                         ], className="w-full mb-4 md:mb-5"),
                         
                         html.Div([
-                            html.H3("Description", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            html.H3(labels["description"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
                             dcc.Input(
                                 id='input_description',
                                 type='text',
-                                placeholder='enter description',
+                                placeholder=labels["enter_description"],
                                 className="w-full px-3 py-2 border border-gray-300 rounded text-xs md:text-sm"
                             )
                         ], className="w-full mb-4 md:mb-5"),
 
                         html.Div([
-                            html.H3("Installment (months)", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            html.H3(labels["installment"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
                             dcc.Slider(
                                 id='spendings-installment',
                                 min=0,
                                 max=24,
                                 value=0,
-                                marks={0: "No Installment"},
+                                marks={0: labels["no_installment"]},
                                 step=1,
                                 tooltip={"placement": "bottom", "always_visible": False},
                                 className="mb-4"
@@ -91,49 +87,49 @@ def spendings_layout(lang="en", use_remote_db=False):
 
                         html.Div(id='installment_value_display', className="text-xs md:text-sm text-gray-600 mt-2"),
 
-                        html.Button('ADD', id='submit_transaction', n_clicks=0, 
+                        html.Button(labels['add'], id='submit_transaction', n_clicks=0, 
                                   className="w-full py-2 font-bold text-white bg-blue-600 hover:bg-blue-700 rounded shadow text-sm md:text-base"),
                         html.Div(id='transaction_status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600")
                     ], className="mb-8 md:mb-0"),
                     
                     html.Div([
-                        html.H2("Monthly Budget", className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-green-700"),
+                        html.H2(labels["monthly_budget"], className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-green-700"),
                         
                         html.Div([
-                            html.H3("Month", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            html.H3(labels["month"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
                             dcc.Dropdown(
                                 id="slct_budget_month",
-                                options=[{'label': key, 'value': value} for key, value in monthsToInt().items()],
+                                options=[{'label': key, 'value': value} for key, value in monthsToInt(lang).items()],
                                 multi=False,
-                                placeholder='select month',
+                                placeholder=labels["select_month"],
                                 className="text-xs md:text-sm"
                             )
                         ], className="w-full mb-4 md:mb-5"),
                         
                         html.Div([
-                            html.H3("Year", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            html.H3(labels["year"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
                             dcc.Dropdown(
                                 id="slct_budget_year",
                                 options=[{'label': year, 'value': year} for year in range(2023, (current_year() + 1) + 1)],
                                 multi=False,
-                                placeholder='select year',
+                                placeholder=labels["select_year"],
                                 className="text-xs md:text-sm"
                             )
                         ], className="w-full mb-4 md:mb-5"),
                         
                         html.Div([
-                            html.H3("Budget", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            html.H3(labels["budget"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
                             dcc.Input(
                                 id='input_total_budget',
                                 type='number',
                                 min=0,
-                                placeholder='enter budget',
+                                placeholder=labels["enter_budget"],
                                 className="w-full px-3 py-2 border border-gray-300 rounded text-xs md:text-sm"
                             )
                         ], className="w-full mb-4 md:mb-5"),
                         
                         html.Div(id='total_budget_status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600"),
-                        html.Button('UPDATE', id='submit_total_budget', n_clicks=0, 
+                        html.Button(labels["update"], id='submit_total_budget', n_clicks=0, 
                                     className="w-full py-2 font-bold text-white bg-green-600 hover:bg-green-700 rounded shadow text-sm md:text-base"),
                         html.Div(id='monthly_budget_status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600"),
                     ], className="mb-8 md:mb-0"),
@@ -145,30 +141,30 @@ def spendings_layout(lang="en", use_remote_db=False):
                 # right section (category budget + budget overview)
                 html.Div([
                     html.Div([
-                        html.H2("Category Budget", className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-purple-700"),
+                        html.H2(labels["category_budget"], className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-purple-700"),
                         
                         html.Div([
-                            html.H3("Category", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            html.H3(labels["category"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
                             dcc.Dropdown(
                                 id='budget_category_dropdown',
-                                options=[{'label': category, 'value': category} for category in categories_df['name']],
-                                placeholder='select category',
+                                options=[{'label': category_labels[category], 'value': category} for category in categories_df['name']],
+                                placeholder=labels["select_category"],
                                 className="text-xs md:text-sm"
                             )
                         ], className="w-full mb-4 md:mb-5"),
                         
                         html.Div([
-                            html.H3("Budget", className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
+                            html.H3(labels["budget"], className="text-xs md:text-sm font-medium text-gray-800 mb-1"),
                             dcc.Input(
                                 id='budget_category_input',
                                 type='number',
                                 min=0,
-                                placeholder='enter Budget',
+                                placeholder=labels["enter_budget"],
                                 className="w-full px-3 py-2 border border-gray-300 rounded text-xs md:text-sm"
                             )
                         ], className="w-full mb-4 md:mb-5"),
                         
-                        html.Button('SET', id='submit_category_budget', n_clicks=0, 
+                        html.Button(labels["set"], id='submit_category_budget', n_clicks=0, 
                                    className="w-full py-2 font-bold text-white bg-purple-600 hover:bg-purple-700 rounded shadow text-sm md:text-base"),
                         html.Div(id='category_budget_status', className="mt-2 md:mt-3 text-xs md:text-sm text-gray-600")
                     ], className="mb-8"),
@@ -178,8 +174,8 @@ def spendings_layout(lang="en", use_remote_db=False):
                         dash_table.DataTable(
                             id='budget_table',
                             columns=[
-                                {'name': 'Category', 'id': 'categoryname', 'type': 'text'},
-                                {'name': 'Budget', 'id': 'categorybudget', 'type': 'numeric', 'editable': True}
+                                {'name': labels["category"], 'id': 'categoryname', 'type': 'text'},
+                                {'name': labels["budget"], 'id': 'categorybudget', 'type': 'numeric', 'editable': True}
                             ],
                             data=[],
                             style_table={'overflowX': 'auto', 'minWidth': '100%'},
@@ -207,7 +203,6 @@ def spendings_layout(lang="en", use_remote_db=False):
 
 def layout(**page_args):
     if session.get("logged_in"):
-        # print("---------\n",page_args,"---------\n")
         return spendings_layout(page_args.get("lang"))
     else:
-        return unauthorized_layout()
+        return unauthorized_layout(page_args.get("lang"))

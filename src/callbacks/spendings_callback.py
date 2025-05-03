@@ -1,11 +1,14 @@
 from datetime import datetime
 from dash import Output, Input, State, no_update
 import pandas as pd
+from i18n.dashboard_labels import get_category_labels
+from i18n.spendings_labels import get_spendings_callback_labels, get_spendings_labels
 from utils.load_data import (get_max_id, load_categories, userid, load_local_categories, load_local_transactions, load_local_monthly_budgets, 
                             load_local_categorical_budgets, load_monthly_budgets, 
                             load_categorical_budgets, save_transactions, save_local_transactions, 
                             save_monthly_budgets, save_local_monthly_budgets, save_categorical_budgets, 
                             save_local_categorical_budgets, update_categorical_budget, update_monthly_budget, cache)
+from utils.url_helpers import get_lang_from_query
 
 def spendings_callback(app, use_remote_db=False):
 
@@ -16,11 +19,16 @@ def spendings_callback(app, use_remote_db=False):
         State('input_amount', 'value'), 
         State('input_category', 'value'), 
         State('input_description', 'value'),
-        State('spendings-installment', 'value')]
+        State('spendings-installment', 'value'),
+        State('url','search')]
     )
-    def add_transaction(n_clicks, date, amount, category, description, installment):
+    def add_transaction(n_clicks, date, amount, category, description, installment, search):
+
+        lang = get_lang_from_query(search) or "en"
+        labels = get_spendings_labels(lang)
 
         current_time = datetime.now().strftime('%H:%M:%S')
+
 
         # TODO: check for remote db
         if n_clicks > 0 and date and amount and category and installment > 1:
@@ -62,7 +70,7 @@ def spendings_callback(app, use_remote_db=False):
 
                 save_local_transactions(transactions)
 
-            return f"Added {installment} installments of {amount / installment:.2f} for {category}"
+            return  f"Added {installment} installments of {amount / installment:.2f} for {category}" if lang == "en" else f"{labels['category']} için {installment} taksit eklendi, her bir taksit tutarı {amount / installment:.2f} olarak hesaplandı"
 
         elif n_clicks > 0 and date and amount and category:
             new_transaction = {
@@ -91,16 +99,16 @@ def spendings_callback(app, use_remote_db=False):
                 transactions.loc[len(transactions)] = new_transaction
                 save_local_transactions(transactions)
 
-            return f"Transaction added: {date}, {amount}, {category}"
+            return f"{labels['transaction_added']} {date}, {amount}, {category}"
 
 
         elif n_clicks > 0:
             if not date:
-                return "Please select a date"
+                return labels['select_date']
             elif not amount:
-                return "Please enter an amount"
+                return labels['select_amount']
             elif not category:
-                return "Please select a category"
+                return labels["select_category"]
         return "" # button not clicked
 
     # update budget overview when new month is selected
@@ -110,10 +118,17 @@ def spendings_callback(app, use_remote_db=False):
         Output('budget_overview_status', 'children')],
         [Input('slct_budget_month', 'value'),
         Input('slct_budget_year', 'value'),
-        Input('update_trigger', 'children')]
+        Input('update_trigger', 'children')],
+        State("url","search")
+
     )
     @cache.memoize()
-    def display_budget(selected_month, selected_year, _):
+    def display_budget(selected_month, selected_year, _, search):
+
+        lang = get_lang_from_query(search) or "en"
+        labels = get_spendings_callback_labels(lang)
+        category_labels = get_category_labels(lang)
+
         if use_remote_db:
             monthly_budgets = load_monthly_budgets()
             categorical_budgets = load_categorical_budgets()
@@ -144,7 +159,7 @@ def spendings_callback(app, use_remote_db=False):
                 total_budget = int(monthly_budget_row['totalbudget'].values[0]) #type: ignore
 
             # Display the monhtly budget status message
-            monthly_budget_status = f"Your current budget for {selected_date.strftime('%B %Y')} is ${total_budget}"
+            monthly_budget_status = f"{labels['your_budget']} {selected_date.strftime('%B %Y')} : ${total_budget}"
         else:
             # display the last budget entry date if no month is selected
             last_entry_date = monthly_budgets['budgetmonth'].max()
@@ -152,15 +167,23 @@ def spendings_callback(app, use_remote_db=False):
             # if a budget entry is found, display the last entry month in the status message
             if last_entry_date is not pd.NaT:
                 last_entry_month = last_entry_date.strftime('%B %Y')
-                monthly_budget_status = f"Your last budget entry was in {last_entry_month}"
+                monthly_budget_status = f"{labels['last_budget_entry']} {last_entry_month}"
             else:
-                monthly_budget_status = "No past budget entries found"    
+                monthly_budget_status = labels['no_budget_entry']
 
         # budget overview
 
         # display the allocated budget for each category in descending order
         budget_table_data = categorical_budgets.to_dict('records')
+        
+        # this converts to other languages
+        for row in budget_table_data:
+            original_name = row['categoryname']
+            row['categoryname'] = category_labels.get(original_name, original_name)
+
         budget_table_data = sorted(budget_table_data, key=lambda x: x['categorybudget'], reverse=True)
+
+        print("-----------------\n", budget_table_data)
 
         # if no data is found, load the categories and display the budget as 0 without saving
         if categorical_budgets.empty:
@@ -169,8 +192,8 @@ def spendings_callback(app, use_remote_db=False):
             else:
                 categories = load_local_categories()
 
-            for categories in categories['name']:
-                budget_table_data.append({'categoryname': categories, 'categorybudget': 0})
+            for category in categories['name']:
+                budget_table_data.append({'categoryname': category, 'categorybudget': 0})
 
         # hide the budget overview display message if no month is selected
         if not(selected_month and selected_year):
@@ -182,9 +205,9 @@ def spendings_callback(app, use_remote_db=False):
 
         # customize the budget overview display message based on the budget surplus/deficit
         if unallocated_budget < 0:
-            budget_overview_status = f"Exceeding current monthly budget by ${-unallocated_budget}"
+            budget_overview_status = f"{labels['budget_exceeding']} ₺{-unallocated_budget}"
         elif unallocated_budget > 0:
-            budget_overview_status = f"Remaining monthly budget of ${unallocated_budget}"
+            budget_overview_status = f"{labels['budget_remaining']} ₺{unallocated_budget}"
         else:
             budget_overview_status = f"${total_budget} Budget Fully Allocated"
 
@@ -196,13 +219,18 @@ def spendings_callback(app, use_remote_db=False):
         [Input('submit_total_budget', 'n_clicks')],
         [State('slct_budget_month', 'value'), 
         State('slct_budget_year', 'value'), 
-        State('input_total_budget', 'value')]
+        State('input_total_budget', 'value'),
+         State('url','search')]
     )
 
-    def update_total_budget(n_clicks, selected_month, selected_year, total_budget):
+    def update_total_budget(n_clicks, selected_month, selected_year, total_budget, search):
+
+        lang = get_lang_from_query(search) or "en"
+        labels = get_spendings_callback_labels(lang)
+
         if n_clicks > 0:
             if total_budget is None or total_budget == '':
-                return "Please enter a total budget"
+                return labels['enter_total_budget'] 
 
             # convert the selected month and year to a datetime object
             selected_date = pd.to_datetime(f'{selected_year}-{selected_month:02d}-01')
@@ -225,7 +253,7 @@ def spendings_callback(app, use_remote_db=False):
                     # update the total budget for the selected month
                     if use_remote_db:
                         update_monthly_budget(userid(), selected_date, total_budget)
-                        return "Total budget updated successfully!"
+                        return labels['total_budget_updated'] 
                     else:
                         monthly_budgets.loc[user_budget.index, 'totalbudget'] = total_budget
             else:
@@ -246,7 +274,7 @@ def spendings_callback(app, use_remote_db=False):
             else:
                 save_local_monthly_budgets(monthly_budgets)
 
-            return "Total budget updated successfully!"
+            return labels['total_budget_updated'] 
         return ""
 
     # update the category budget when a new category budget is submitted
@@ -254,9 +282,13 @@ def spendings_callback(app, use_remote_db=False):
         Output('category_budget_status', 'children'),
         [Input('submit_category_budget', 'n_clicks')],
         [State('budget_category_dropdown', 'value'), 
-        State('budget_category_input', 'value')]
+        State('budget_category_input', 'value'),
+        State("url","search")]
     )
-    def update_category_budget(n_clicks, selected_category, new_category_budget):
+    def update_category_budget(n_clicks, selected_category, new_category_budget, search):
+        lang = get_lang_from_query(search) or "en"
+        labels = get_spendings_callback_labels(lang)
+
         if n_clicks > 0:
             if selected_category and new_category_budget is not None:
                 if use_remote_db:
@@ -272,7 +304,8 @@ def spendings_callback(app, use_remote_db=False):
                 if not user_category.empty:
                     if use_remote_db:
                         update_categorical_budget(userid(), selected_category, new_category_budget)
-                        return "Category budget updated successfully!"
+
+                        return labels['category_budget_updated'] 
                     else:
                         categorical_budgets.loc[user_category.index, 'categorybudget'] = new_category_budget
 
@@ -294,22 +327,27 @@ def spendings_callback(app, use_remote_db=False):
                 else:
                     save_local_categorical_budgets(categorical_budgets)
 
-                return "Category budget updated successfully!"
+                return labels['category_budget_updated'] 
             elif not selected_category:
-                return "Please select a category"
+                return labels['select_category']
             elif new_category_budget is None:
-                return "Please enter a budget amount"
+                return labels["enter_category_budget"]
         return ""
 
     # force an update to the budget table when a new category budget is submitted
     @app.callback(
         Output('update_trigger', 'children'),
         [Input('total_budget_status', 'children'),
-         Input('category_budget_status', 'children')]
+         Input('category_budget_status', 'children')],
+        State("url","search")
     )
-    def trigger_update(total_budget_status, category_budget_status):
-        if (total_budget_status == "Total budget updated successfully!" 
-            or category_budget_status == "Category budget updated successfully!"):
+    def trigger_update(total_budget_status, category_budget_status, search):
+
+        lang = get_lang_from_query(search) or "en"
+        labels = get_spendings_callback_labels(lang)
+
+        if (total_budget_status == labels["total_budget_updated"]
+            or category_budget_status == labels["category_budget_updated"]):
             return "Trigger Update"
         else:
             return no_update

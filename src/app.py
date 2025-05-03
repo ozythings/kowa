@@ -23,7 +23,7 @@ app.layout = html.Div([
     dcc.Store("login_status"),
     dcc.Store(id='lang-store'),
     dcc.Location(id="url"),
-    navbar(lang="en"),
+    navbar(),
     dash.page_container
 ])
 

@@ -26,3 +26,20 @@ def get_signup_labels(lang="en"):
         },
     }
     return all_labels.get(lang, all_labels["en"])
+
+def get_signup_callback_labels(lang="en"):
+    all_labels = {
+        "en": {
+            "password_mismatch": "Passwords do not match",
+            "email_exists": "Email already exists",
+            "account_created": "Account created successfully",
+            "fill_out_fields": "Please fill out all fields",
+        },
+        "tr": {
+            "password_mismatch": "Şifreler uyuşmuyor",
+            "email_exists": "E-posta zaten mevcut",
+            "account_created": "Hesap başarıyla oluşturuldu",
+            "fill_out_fields": "Lütfen tüm alanları doldurun",
+        },
+    }
+    return all_labels.get(lang, all_labels["en"])

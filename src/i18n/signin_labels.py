@@ -19,3 +19,17 @@ def get_signin_labels(lang="en"):
     }
     return all_labels.get(lang, all_labels["en"])
 
+def get_signin_callback_labels(lang="en"):
+    all_labels = {
+        "en": {
+            "please_enter_email_password": "Please enter your email and password",
+            "login_successful": "Login successful",
+            "invalid_email_password": "Invalid email or password",
+        },
+        "tr": {
+            "please_enter_email_password": "Lütfen e-posta adresinizi ve şifrenizi girin",
+            "login_successful": "Giriş başarılı",
+            "invalid_email_password": "Geçersiz e-posta adresi veya şifre",
+        },
+    }
+    return all_labels.get(lang, all_labels["en"])

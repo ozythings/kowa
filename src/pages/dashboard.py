@@ -50,9 +50,9 @@ def dashboard_layout(lang="en", use_remote_db=False):
                     html.H2(labels["select_month"], className="text-lg font-medium mb-2"),
                     dcc.Dropdown(
                         id="slct_month",
-                        options=[{'label': key, 'value': value} for key, value in monthsToInt().items()],
+                        options=[{'label': key, 'value': value} for key, value in monthsToInt(lang).items()],
                         multi=False,
-                        value=last_transaction_month,
+                        value=current_month(),
                         placeholder=labels["select_month"],
                         className='w-full',
                     )
