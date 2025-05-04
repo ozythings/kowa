@@ -30,7 +30,7 @@ def signin_layout(lang="en"):
                     dcc.Input(
                         id='login_email',
                         type='text',
-                        placeholder=labels["username_placeholder"],
+                        placeholder=labels["email_placeholder"],
                         className='w-full px-4 py-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                     ),
 

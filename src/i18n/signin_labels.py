@@ -2,7 +2,7 @@ def get_signin_labels(lang="en"):
     all_labels = {
         "en": {
             "title": "Sign In",
-            "username_placeholder": "Username",
+            "email_placeholder": "Email",
             "password_placeholder": "Password",
             "login_button": "Login",
             "login_message": "Please enter your credentials to sign in.",
@@ -10,7 +10,7 @@ def get_signin_labels(lang="en"):
         },
         "tr": {
             "title": "Giriş Yap",
-            "username_placeholder": "Kullanıcı Adı",
+            "username_placeholder": "Eposta",
             "password_placeholder": "Şifre",
             "login_button": "Giriş Yap",
             "login_message": "Giriş yapmak için bilgilerinizi girin.",

@@ -122,7 +122,7 @@ def spendings_callback(app, use_remote_db=False):
         State("url","search")
 
     )
-    @cache.memoize()
+    # @cache.memoize()
     def display_budget(selected_month, selected_year, _, search):
 
         lang = get_lang_from_query(search) or "en"
