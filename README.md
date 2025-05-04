@@ -90,6 +90,27 @@ npx tailwindcss build -o output.css
 
 ---
 
+## 🗃️ PostgreSQL Setup (via Docker)
+
+To set up the PostgreSQL database using a SQL script (`setup.sql`), follow these steps:
+
+1. **Copy the SQL file into the container**:
+
+   ```bash
+   docker cp setup.sql <your_database_container_name>:/setup.sql
+   ```
+
+2. **Execute the SQL file inside the container**:
+
+   ```bash
+   docker exec -it -e PGPASSWORD=kowa <your_database_container_name> \
+     psql -U postgres -d postgres -f /setup.sql
+   ```
+
+> 📝 Replace `<your_database_container_name>` with the actual name or ID of your PostgreSQL Docker container.
+
+---
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).

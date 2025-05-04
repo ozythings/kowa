@@ -57,25 +57,25 @@ def load_local_database():
     return transactions, monthly_budgets, categorical_budgets
 
 # load specific data from the remote database
-@cache.memoize()
+#@cache.memoize()
 def load_transactions():
     query = f"SELECT * FROM Transactions WHERE userid = {userid()};"
     df = pd.read_sql(query, global_engine, parse_dates=['date'])
     return df
 
-@cache.memoize()
+#@cache.memoize()
 def load_monthly_budgets():
     query = f"SELECT * FROM MonthlyBudgets WHERE userid = {userid()};"
     df = pd.read_sql(query, global_engine, parse_dates=['budgetmonth'])
     return df
 
-@cache.memoize()
+#@cache.memoize()
 def load_categorical_budgets():
     query = f"SELECT * FROM CategoricalBudgets WHERE userid = {userid()};"
     df = pd.read_sql(query, global_engine)
     return df
 
-@cache.memoize()
+#@cache.memoize()
 def load_categories():
     df = pd.read_sql("SELECT * FROM Categories;", global_engine)
     return df
