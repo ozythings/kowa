@@ -10,7 +10,7 @@ def get_signin_labels(lang="en"):
         },
         "tr": {
             "title": "Giriş Yap",
-            "username_placeholder": "Eposta",
+            "email_placeholder": "Eposta",
             "password_placeholder": "Şifre",
             "login_button": "Giriş Yap",
             "login_message": "Giriş yapmak için bilgilerinizi girin.",

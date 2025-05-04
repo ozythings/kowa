@@ -76,15 +76,15 @@ def navbar_callback(app):
                         id='mobile-menu-button',
                         className='md:hidden flex flex-col justify-center items-center w-8 h-8',
                         children=[
-                            html.Span(className='block w-6 h-0.5 bg-white mb-1.5 transition-all duration-300'),
-                            html.Span(className='block w-6 h-0.5 bg-white mb-1.5 transition-all duration-300'),
-                            html.Span(className='block w-6 h-0.5 bg-white transition-all duration-300'),
+                            html.Span(id='line1',className='block w-6 h-0.5 bg-white mb-1.5 transition-all duration-300'),
+                            html.Span(id='line2',className='block w-6 h-0.5 bg-white mb-1.5 transition-all duration-300'),
+                            html.Span(id='line3',className='block w-6 h-0.5 bg-white transition-all duration-300'),
                         ]
                     )
                 ], className='flex justify-between items-center w-full md:w-auto'),
                 html.Div(
                     id='mobile-menu',
-                    className='md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto mt-4 md:mt-0',
+                    className='hidden md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto mt-4 md:mt-0',
                     children=nav_links
                 )
             ], className='flex flex-col md:flex-row justify-between items-center py-4 px-6 bg-gradient-to-r from-purple-600 to-blue-500 w-full')
@@ -115,19 +115,18 @@ def navbar_callback(app):
     def toggle_mobile_menu(n_clicks, menu_class, line1_class, line2_class, line3_class):
         if n_clicks is None:
             return dash.no_update
-        
-        if 'hidden' in menu_class:
-            # open menu
-            new_menu_class = menu_class.replace('hidden', 'flex')
+
+        is_hidden = 'hidden' in menu_class
+
+        new_menu_class = menu_class.replace('hidden', 'flex') if is_hidden else menu_class.replace('flex', 'hidden')
+
+        if is_hidden:
             new_line1_class = line1_class + ' rotate-45 translate-y-2'
-            new_line2_class = line1_class + ' opacity-0'
-            new_line3_class = line1_class + ' -rotate-45 -translate-y-2'
+            new_line2_class = line2_class + ' opacity-0'
+            new_line3_class = line3_class + ' -rotate-45 -translate-y-2'
         else:
-            # close menu
-            new_menu_class = menu_class.replace('flex', 'hidden')
             new_line1_class = line1_class.replace(' rotate-45 translate-y-2', '')
             new_line2_class = line2_class.replace(' opacity-0', '')
             new_line3_class = line3_class.replace(' -rotate-45 -translate-y-2', '')
-        
-        return new_menu_class, new_line1_class, new_line2_class, new_line3_class
 
+        return new_menu_class, new_line1_class, new_line2_class, new_line3_class
