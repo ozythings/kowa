@@ -140,8 +140,8 @@ def spendings_callback(app, use_remote_db=False):
             monthly_budgets = monthly_budgets[monthly_budgets['userid'] == userid()]
             categorical_budgets = categorical_budgets[categorical_budgets['userid'] == userid()]
 
-        print('Monthly Budgets\n', monthly_budgets[-5:])
-        print('Categories Budgets\n', categorical_budgets[-5:])
+        # print('Monthly Budgets\n', monthly_budgets[-5:])
+        # print('Categories Budgets\n', categorical_budgets[-5:])
         
         # monthly budget
 
@@ -183,7 +183,7 @@ def spendings_callback(app, use_remote_db=False):
 
         budget_table_data = sorted(budget_table_data, key=lambda x: x['categorybudget'], reverse=True)
 
-        print("-----------------\n", budget_table_data)
+        # print("-----------------\n", budget_table_data)
 
         # if no data is found, load the categories and display the budget as 0 without saving
         if categorical_budgets.empty:
