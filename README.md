@@ -40,7 +40,7 @@ pip install -r requirements.txt
 
 ```bash
 npm install
-npx tailwindcss build -o output.css
+npx tailwindcss -i ./src/assets/css/tailwind.css -o ./src/assets/css/output.css --watch
 ```
 
 ---
