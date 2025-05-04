@@ -1,6 +1,8 @@
 from dash import Output, Input, State
 from flask import session
 from sqlalchemy import text
+from i18n.settings_labels import get_settings_callback_labels
+from utils.url_helpers import get_lang_from_query
 from utils.user_management import hash_password, validate_local_user, validate_remote_user, local_users_url
 from utils.load_data import global_engine, load_local_users
 
@@ -34,9 +36,14 @@ def settings_callback(app, use_remote_db=False):
         Output('update_password_status', 'children'),
         [Input('update_password_button', 'n_clicks')],
         [State('new_password', 'value'), 
-         State('confirm_new_password', 'value')]
+         State('confirm_new_password', 'value'),
+        State('url','search')]
     )
-    def update_password(n_clicks, new_password, confirm_new_password):
+    def update_password(n_clicks, new_password, confirm_new_password, search):
+
+        lang = get_lang_from_query(search) or "en"
+        labels = get_settings_callback_labels(lang)
+
         if n_clicks and n_clicks > 0:
             if new_password and confirm_new_password:
                 if new_password != confirm_new_password:
@@ -48,7 +55,7 @@ def settings_callback(app, use_remote_db=False):
                         update_remote_user_password(userid, new_password)
                     else:
                         update_local_user_password(userid, new_password)
-                    return 'Password updated successfully'
+                    return labels["password_updated"]
                 else:
                     return 'User not logged in'
             return 'Please fill out all fields'

@@ -53,3 +53,14 @@ def get_settings_labels(lang="en"):
     }
 
     return all_labels.get(lang, all_labels["en"])
+
+def get_settings_callback_labels(lang="en"):
+    all_labels = {
+        "en": {
+            "password_update": 'Password updated successfully',
+        },
+        "tr": {
+            "password_updated": "Şifre başarıyla güncellendi"
+        },
+    }
+    return all_labels.get(lang, all_labels["en"])
