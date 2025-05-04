@@ -26,6 +26,8 @@ def spendings_callback(app, use_remote_db=False):
 
         lang = get_lang_from_query(search) or "en"
         labels = get_spendings_labels(lang)
+        callback_labels = get_spendings_callback_labels(lang)
+        category_labels = get_category_labels(lang)
 
         current_time = datetime.now().strftime('%H:%M:%S')
 
@@ -99,7 +101,7 @@ def spendings_callback(app, use_remote_db=False):
                 transactions.loc[len(transactions)] = new_transaction
                 save_local_transactions(transactions)
 
-            return f"{labels['transaction_added']} {date}, {amount}, {category}"
+            return f"{callback_labels['transaction_added']} {date}, {amount}, {category_labels[category]}"
 
 
         elif n_clicks > 0:

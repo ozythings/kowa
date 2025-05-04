@@ -97,7 +97,7 @@ def dashboard_callback(app, use_remote_db=False):
         status_label = {
             labels["status_label"]["excellent"]: "#00FF00",     
             labels["status_label"]["very_good"]: "#7FFF00",     
-            labels["status_label"]["good"]: "#FFFF00",          
+            labels["status_label"]["good"]: "#808080",          
             labels["status_label"]["fair"]: "#FFD700",          
             labels["status_label"]["needs_improv"]: "#FFA500",
             labels["status_label"]["poor"]: "#FF8C00",          
