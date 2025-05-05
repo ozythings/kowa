@@ -98,8 +98,6 @@ def navbar_callback(app):
         #     pass
 
 
-    # got fxkin broken
-    # TODO: fixme
     @app.callback(
         [Output('mobile-menu', 'className'),
          Output('line1', 'className'),
