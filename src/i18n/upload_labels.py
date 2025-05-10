@@ -38,3 +38,22 @@ def get_upload_labels(lang="en"):
         },
     }
     return all_labels.get(lang, all_labels["en"])
+
+def get_upload_callback_labels(lang="en"):
+    all_labels = {
+        "en": {
+            "upload_successful": "Upload successful!",
+            "uploaded": "Uploaded",
+            "select_date": "Please select a date",
+            "enter_amount": "Please enter an amount",
+            "select_category": "Please select a category",
+            },
+        "tr": {
+            "upload_successful": "Yükleme başarılı!",
+            "uploaded": "Yüklendi",
+            "select_date": "Lütfen bir tarih seçin",
+            "enter_amount": "Lütfen bir miktar girin",
+            "select_category": "Lütfen bir kategori seçin",
+        },
+    }
+    return all_labels.get(lang, all_labels["en"])

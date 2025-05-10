@@ -4,7 +4,7 @@ from dash import State, html, Output, Input
 from dash.dash import base64
 
 from i18n.dashboard_labels import get_category_labels
-from i18n.upload_labels import get_upload_labels
+from i18n.upload_labels import get_upload_callback_labels, get_upload_labels
 from utils.load_data import load_local_transactions, save_local_transactions, save_transactions, userid
 from chrome_lens_py import LensAPI
 import re
@@ -99,9 +99,14 @@ def upload_callback(app, use_remote_db=False):
          Output("preview-container", "children"),
          Output("uploaded-image-path", "children")],
         [Input("upload-image", "contents")],
-        [State("upload-image", "filename")]
+        [State("upload-image", "filename"),
+        State('url','search')]
     )
-    def handle_upload(contents, filename):
+    def handle_upload(contents, filename, search):
+
+        lang = get_lang_from_query(search) or "en"
+        callback_labels = get_upload_callback_labels(lang)
+
         if contents is None:
             return "", "", ""
         
@@ -120,10 +125,10 @@ def upload_callback(app, use_remote_db=False):
         # image preview
         preview = html.Div([
             html.Img(src=contents, style={'maxHeight': '200px', 'maxWidth': '100%'}),
-            html.Div(f"Uploaded: {filename}", className="text-sm")
+            html.Div(f"{callback_labels['uploaded']}: {filename}", className="text-sm")
         ])
         
-        return f"Upload successful!", preview, unique_filename
+        return callback_labels["upload_successful"], preview, unique_filename
 
     @app.callback(
         [Output("ocr-amount", "value"),
@@ -159,8 +164,6 @@ def upload_callback(app, use_remote_db=False):
             error_message = f"Processing error: {str(e)}"
             return error_message, "", "", "", error_message
 
-    # i know this is not the best way
-    # so stfu
     @app.callback(
         Output('ocr-transaction-status', 'children'),
         Input('ocr-add-transaction', 'n_clicks'),
@@ -175,6 +178,7 @@ def upload_callback(app, use_remote_db=False):
         lang = get_lang_from_query(search) or "en"
         labels = get_upload_labels(lang)
         category_labels = get_category_labels(lang)
+        callback_labels = get_upload_callback_labels(lang)
 
         category_map = {
             "BIM": "Miscellaneous",
@@ -217,9 +221,9 @@ def upload_callback(app, use_remote_db=False):
 
         elif n_clicks > 0:
             if not date:
-                return "Please select a date"
+                return callback_labels["select_date"]
             elif not amount:
-                return "Please enter an amount"
+                return callback_labels["enter_amount"]
             elif not category:
-                return "Please select a category"
+                return callback_labels["select_category"]
         return "" # button not clicked
